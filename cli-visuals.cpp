@@ -21,7 +21,8 @@ void WelcomeUser(string osname)
 +=============================================================================+
 	)";
 	SetTextColor("yellow");
-	cout << "\nHello! Welcome to the " << osname << " CLI!\n";
+	cout << "\nHello! Welcome to the " << osname << " CLI!\n\n";
+	cout << "Developers:\nDONATO, Adriel Joseph\nROSARIO, Elijah Nicolo\n\n";
 	cout << "Type 'exit' to quit, 'clear' to clear the screen.\n\n";
 }
 
