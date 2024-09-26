@@ -129,18 +129,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AbsConsole.cpp" />
+    <ClCompile Include="BaseScreen.cpp" />
     <ClCompile Include="clear.cpp" />
+    <ClCompile Include="ConsoleManager.cpp" />
     <ClCompile Include="exit.cpp" />
     <ClCompile Include="initialize.cpp" />
-    <ClCompile Include="OSEmulator.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainConsole.cpp" />
+    <ClCompile Include="Process.cpp" />
     <ClCompile Include="report-util.cpp" />
     <ClCompile Include="scheduler-stop.cpp" />
     <ClCompile Include="scheduler-test.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="cli-visuals.cpp" />
+    <ClCompile Include="time-converter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AbsConsole.h" />
+    <ClInclude Include="BaseScreen.h" />
     <ClInclude Include="Commands.h" />
+    <ClInclude Include="ConsoleManager.h" />
+    <ClInclude Include="MainConsole.h" />
+    <ClInclude Include="Process.h" />
+    <ClInclude Include="TypeDefs.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
