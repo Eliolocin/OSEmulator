@@ -1,0 +1,3 @@
+﻿  MarqueeConsole.cpp
+C:\Users\Personal\source\repos\MarqueeConsole\MarqueeConsole\MarqueeConsole.cpp(98,22): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  MarqueeConsole.vcxproj -> C:\Users\Personal\source\repos\MarqueeConsole\x64\Debug\MarqueeConsole.exe
