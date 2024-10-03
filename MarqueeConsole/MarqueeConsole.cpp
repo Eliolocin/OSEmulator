@@ -9,6 +9,7 @@ class MarqueeConsole {
 public:
     void Run();
     std::string ProcessCommand(const std::string& command);
+    void RunNonThreaded();
 private:
     void PollKeyboard();
     void RedrawScreen();
@@ -157,10 +158,21 @@ std::string MarqueeConsole::ProcessCommand(const std::string& command) {
 void MarqueeConsole::Run() {
     // Start the marquee in a separate thread
     std::thread marqueeThread(&MarqueeWorkerThread::StartMarquee, MarqueeWorkerThread());
-    marqueeThread.detach();
+    marqueeThread.detach(); // Allows animation and input to run in parallel
 
     // Poll for keyboard events in the main thread
     PollKeyboard();
+}
+
+void MarqueeConsole::RunNonThreaded() {
+    MarqueeWorkerThread worker;
+    while (true) {
+        // Poll for keyboard input 
+        PollKeyboard();  // blocks the marquee from updating while it handles input
+
+        // After handling input, update the marquee 
+        worker.StartMarquee();  // Sequential execution: the marquee updates only after input is handled
+    }
 }
 
 int main() {
