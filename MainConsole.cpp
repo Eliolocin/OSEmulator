@@ -57,6 +57,10 @@ void MainConsole::process()
 	{
 		Clear();
 	}
+	else if (Command == "process-smi")
+	{
+		ProcessSmi();
+	}
 	else if (Command == "exit")
 	{
 		Exit();

@@ -70,6 +70,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);include/</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -137,6 +140,7 @@
     <ClCompile Include="initialize.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainConsole.cpp" />
+    <ClCompile Include="process-smi.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="report-util.cpp" />
     <ClCompile Include="scheduler-stop.cpp" />
