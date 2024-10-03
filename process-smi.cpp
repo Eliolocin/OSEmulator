@@ -34,15 +34,16 @@ void PrintProcessLayout()
     DummyProcess p3(4999, "C:\\Windows\\System32\\notepad.exe");
     DummyProcess p4(3923, "C:\\Windows\\System32\\taskmgr.exe");
     DummyProcess p5(5107, "C:\\Windows\\System32\\virus69.exe");
-
     DummyProcess printableProcesses[5] = { p1,p2,p3,p4,p5 };
 
 
     tabulate::Table processSummary;
+
+	// Add Header Rows
     processSummary.add_row({ "Processes:","\u00A0","\u00A0","\u00A0" });
     processSummary.add_row({ "PID","Type","Process name", "GPU Memory Usage" });
 
-
+    // Format Header Rows
     processSummary[0].format().border_left(" ").border_right(" ");
     processSummary[0][0].format().border_left("|");
     processSummary[0][3].format().border_right("|");
@@ -51,8 +52,9 @@ void PrintProcessLayout()
     processSummary[1][0].format().border_left("|");
     processSummary[1][3].format().border_right("|");
 
-    int i = 0;
+    
     // Contain in For Loop for adding each process
+    int i = 0;
     for (DummyProcess process : printableProcesses)
     {
         processSummary.add_row({ std::to_string(process.pid), "C+G", process.processName, "N/A"});
@@ -70,8 +72,7 @@ void PrintProcessLayout()
         i++;
     }
 
-    // MAIN tables should have a total width of ~100 for uniformity
-
+    // Make width uniform
     processSummary.column(0).format().width(12).font_align(tabulate::FontAlign::right);
     processSummary.column(1).format().width(7).font_align(tabulate::FontAlign::right);
     processSummary.column(2).format().width(60);
@@ -85,22 +86,18 @@ void PrintProcessLayout()
 
 void PrintGPULayout()
 {
-    tabulate::Table gpuSummary; // Contains 3 rows
+    tabulate::Table gpuSummary;
 
-    //Initialize & Add First Row
+    // Add & Format First Row
     gpuSummary.add_row({ "CSOPESY-SMI 101.11", "Driver Ver. 101.11", "CUDA Ver. 25.5" });
 
     gpuSummary[0].format().border_left(" ").border_right(" ");
     gpuSummary[0][0].format().border_left("|");
     gpuSummary[0][1].format().font_align(tabulate::FontAlign::right);
     gpuSummary[0][2].format().border_right("|").font_align(tabulate::FontAlign::right);
-    // MAIN tables should have a total width of 100 for uniformity
-    gpuSummary.column(0).format().width(48);
-    gpuSummary.column(1).format().width(26);
-    gpuSummary.column(2).format().width(26);
+    
 
-    //Initialize Second Row
-
+    // Add & Format Second Row (Nested Table)
     tabulate::Table gpuFan;
     gpuFan.add_row({ "GPU\nFan", "Name\nTemp", "\nPerf", "\u00A0           \u00A0", "TCC/WDDM\nPwr:Usage/Cap" }).format().hide_border();
     gpuFan.column(4).format().font_align(tabulate::FontAlign::right);
@@ -117,7 +114,7 @@ void PrintGPULayout()
 
     gpuSummary.add_row({ gpuFan, gpuBus, gpuManu }); //Add Second Row
 
-    //Initialize Third Row
+    // Add & Format Third Row (Nested Table)
     tabulate::Table gpuStats1;
     gpuStats1.add_row({ "\u00A0 0", "Nvidia", "Geforce", "GTX 1080", "WDDM" }).format().hide_border();
     gpuStats1.add_row({ "28%","37C","P8","\u00A0         \u00A0", "11W / 180W" });
@@ -129,7 +126,6 @@ void PrintGPULayout()
     gpuStats2.add_row({ "701MiB /", "8192MiB" });
     gpuStats2.column(1).format().font_align(tabulate::FontAlign::right);
 
-
     tabulate::Table gpuStats3;
     gpuStats3.add_row({ "\u00A0          \u00A0","\u00A0", "N/A" }).format().hide_border();
     gpuStats3.add_row({ "\u00A0 0%","\u00A0", "Default" });
@@ -139,6 +135,10 @@ void PrintGPULayout()
 
     gpuSummary.add_row({ gpuStats1, gpuStats2, gpuStats3 }).format().border_top("="); //Add Third Row
 
+    // Make widths uniform
+    gpuSummary.column(0).format().width(48);
+    gpuSummary.column(1).format().width(26);
+    gpuSummary.column(2).format().width(26);
 
     std::cout << gpuSummary << std::endl << std::endl;
 }
