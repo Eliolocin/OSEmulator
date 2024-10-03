@@ -1,0 +1,11 @@
+prefix=${pcfiledir}/../..
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${exec_prefix}/lib
+
+Name: libfort
+Description: A simple C/C++ crossplatform library to create formatted text tables.
+Version: 0.4.2
+
+Libs: "-L${libdir}" -lfort
+Cflags: "-I${includedir}"

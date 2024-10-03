@@ -1,0 +1,12 @@
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/CMakeFiles/headers.dir
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/CMakeFiles/edit_cache.dir
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/CMakeFiles/rebuild_cache.dir
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/CMakeFiles/list_install_components.dir
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/CMakeFiles/install.dir
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/CMakeFiles/install/local.dir
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/lib/CMakeFiles/fort.dir
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/lib/CMakeFiles/edit_cache.dir
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/lib/CMakeFiles/rebuild_cache.dir
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/lib/CMakeFiles/list_install_components.dir
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/lib/CMakeFiles/install.dir
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/blds/libfort/x64-windows-dbg/lib/CMakeFiles/install/local.dir

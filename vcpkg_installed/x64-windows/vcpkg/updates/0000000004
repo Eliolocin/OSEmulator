@@ -1,0 +1,9 @@
+Package: libfort
+Version: 0.4.2
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: e84973a04875b42aa42c9a639d92258fd0b3fccebea7fd2741151aabc7671e23
+Description: A simple crossplatform library to create formatted text tables
+Status: install ok half-installed

@@ -1,0 +1,110 @@
+{
+  "$schema": "https://raw.githubusercontent.com/spdx/spdx-spec/v2.2.1/schemas/spdx-schema.json",
+  "spdxVersion": "SPDX-2.2",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "documentNamespace": "https://spdx.org/spdxdocs/libfort-x64-windows-0.4.2#1-ea85f63c-10e1-49eb-9d66-1fb8b19d7c19",
+  "name": "libfort:x64-windows@0.4.2#1 e84973a04875b42aa42c9a639d92258fd0b3fccebea7fd2741151aabc7671e23",
+  "creationInfo": {
+    "creators": [
+      "Tool: vcpkg-2024-09-30-ab8988503c7cffabfd440b243a383c0a352a023d"
+    ],
+    "created": "2024-10-03T06:26:47Z"
+  },
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "GENERATES",
+      "relatedSpdxElement": "SPDXRef-binary"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-0"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-1"
+    },
+    {
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "GENERATED_FROM",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-0",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-1",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    }
+  ],
+  "packages": [
+    {
+      "name": "libfort",
+      "SPDXID": "SPDXRef-port",
+      "versionInfo": "0.4.2#1",
+      "downloadLocation": "git+https://github.com/microsoft/vcpkg@6b7925f1a567ce07e29977e40eb17f2a520922c8",
+      "homepage": "https://github.com/seleznevae/libfort",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "description": "A simple crossplatform library to create formatted text tables",
+      "comment": "This is the port (recipe) consumed by vcpkg."
+    },
+    {
+      "name": "libfort:x64-windows",
+      "SPDXID": "SPDXRef-binary",
+      "versionInfo": "e84973a04875b42aa42c9a639d92258fd0b3fccebea7fd2741151aabc7671e23",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "comment": "This is a binary package built by vcpkg."
+    },
+    {
+      "SPDXID": "SPDXRef-resource-1",
+      "name": "seleznevae/libfort",
+      "downloadLocation": "git+https://github.com/seleznevae/libfort@b1c32b67511f4612996b287a1ef4a9df012521d2",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "56d3bd00b8a72a5f9deb9bca9a325e100319aed55e10321d04243d8a2a94c0fa513ada1b13bc59957af01b1f2c5f1655304a4a608e118cbeb65d2b4527f102d0"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "fileName": "./C:/Users/NROSARIO/AppData/Local/vcpkg/registries/git-trees/6b7925f1a567ce07e29977e40eb17f2a520922c8/portfile.cmake",
+      "SPDXID": "SPDXRef-file-0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c8e99ffc717bd0bf316eba618aa5516e6a0b7920d98f61016191d68d7a8ffb5f"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/NROSARIO/AppData/Local/vcpkg/registries/git-trees/6b7925f1a567ce07e29977e40eb17f2a520922c8/vcpkg.json",
+      "SPDXID": "SPDXRef-file-1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6dd4707fa2dc997bc6eda8b5be83e674a2f6ceeadf3d2be1e85d246a819742b0"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    }
+  ]
+}

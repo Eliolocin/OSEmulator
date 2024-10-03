@@ -1,0 +1,8 @@
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/pkgs/libfort_x64-windows/debug/lib/fort.lib
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/pkgs/libfort_x64-windows/debug/include/fort.h
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/pkgs/libfort_x64-windows/debug/include/fort.hpp
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/pkgs/libfort_x64-windows/debug/lib/pkgconfig/libfort.pc
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/pkgs/libfort_x64-windows/debug/lib/cmake/libfort/libfort-config.cmake
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/pkgs/libfort_x64-windows/debug/lib/cmake/libfort/libfort-config-version.cmake
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/pkgs/libfort_x64-windows/debug/lib/cmake/libfort/libfort-targets.cmake
+C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/pkgs/libfort_x64-windows/debug/lib/cmake/libfort/libfort-targets-debug.cmake

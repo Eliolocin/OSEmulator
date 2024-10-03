@@ -1,0 +1,10 @@
+prefix=C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/pkgs/libfort_x64-windows
+exec_prefix=C:/Users/NROSARIO/Desktop/OSEmulator/vcpkg_installed/vcpkg/pkgs/libfort_x64-windows
+includedir=${prefix}/include
+libdir=${exec_prefix}/lib
+
+Name: libfort
+Description: A simple C/C++ crossplatform library to create formatted text tables.
+Version: 0.4.2
+Cflags: -I${includedir}
+Libs: -L${libdir} -lfort

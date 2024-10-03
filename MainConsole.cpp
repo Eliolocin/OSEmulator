@@ -43,6 +43,10 @@ void MainConsole::process()
 	{
 		SchedulerTest();
 	}
+	else if (Command == "process-smi")
+	{
+		ProcessSMI();
+	}
 	else if (Command.substr(0,10) == "screen -r ")
 	{
 		Params = Command.substr(10); // Extracts the process name from the command

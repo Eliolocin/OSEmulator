@@ -70,6 +70,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -129,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Downloads\libfort-0.4.2\lib\fort.c" />
     <ClCompile Include="AbsConsole.cpp" />
     <ClCompile Include="BaseScreen.cpp" />
     <ClCompile Include="clear.cpp" />
@@ -137,6 +141,7 @@
     <ClCompile Include="initialize.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainConsole.cpp" />
+    <ClCompile Include="process-smi.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="report-util.cpp" />
     <ClCompile Include="scheduler-stop.cpp" />
@@ -146,6 +151,7 @@
     <ClCompile Include="time-converter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Downloads\libfort-0.4.2\lib\fort.hpp" />
     <ClInclude Include="AbsConsole.h" />
     <ClInclude Include="BaseScreen.h" />
     <ClInclude Include="Commands.h" />

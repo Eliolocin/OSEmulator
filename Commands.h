@@ -9,5 +9,6 @@ void Initialize();
 void ReportUtil();
 void SchedulerStop();
 void SchedulerTest();
+void ProcessSMI();
 void ScreenR(std::string processName);
 void ScreenS(std::string processName);
