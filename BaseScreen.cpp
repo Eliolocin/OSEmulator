@@ -19,6 +19,11 @@ void BaseScreen::display()
 
 }
 
+std::shared_ptr<Process> BaseScreen::getProcess() // Returns process attached to this BaseScreen
+{
+	return attachedProcess;
+}
+
 void BaseScreen::process()
 {
 	String Command; // User input
@@ -34,6 +39,14 @@ void BaseScreen::process()
 	{
 		ConsoleManager::getInstance()->switchConsole(MAIN_CONSOLE);
 	}
+	else if (Command == "execute") // Test function that executes all of processes' commands manually using 'Main' thread
+	{
+		for (int i = 0; i < attachedProcess->getTotalCommandCounter(); i++)
+		{
+			attachedProcess->executeCurrentCommand();
+			attachedProcess->moveToNextLine();
+		}
+	}
 	else
 	{
 		SetTextColor("red");
@@ -47,11 +60,11 @@ void BaseScreen::printProcessInfo() const
 	std::cout << "Process Name: " << attachedProcess->getName() << std::endl;
 	std::cout << "Process ID: " << attachedProcess->getPid() << std::endl << std::endl;
 
-	std::cout << "Current Line of Instruction: " << attachedProcess->getCurrentLine() << std::endl;
-	std::cout << "Total Lines of Instruction: " << attachedProcess->getTotalLines() << std::endl << std::endl;
+	std::cout << "Current Line of Instruction: " << attachedProcess->getCommandCounter() << std::endl;
+	std::cout << "Total Lines of Instruction: " << (attachedProcess->getTotalCommandCounter()) << std::endl << std::endl;
 
-	std::cout << "Time Started: " << convertTime(attachedProcess->getTimeStarted()) << std::endl << std::endl;
-	//std::cout << "Time Finished: " << convertTime(attachedProcess->getTimeFinished()) << std::endl << std::endl;
+	std::cout << "Time Started: " << convertTime(attachedProcess->getTimeStarted()) << std::endl;
+	std::cout << "Time Finished: " << convertTime(attachedProcess->getTimeFinished()) << std::endl << std::endl;
 	SetTextColor("yellow");
 	std::cout << "Type 'exit' to return to the main menu." << std::endl << std::endl;
 	//std::cout << "Time Finished: " << convertTime(attachedProcess->getTimeFinished()) << std::endl;

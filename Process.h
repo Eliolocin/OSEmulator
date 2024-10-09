@@ -1,25 +1,68 @@
 #pragma once
 #include "TypeDefs.h"
-
+#include "ICommand.h"
 class Process // Class representing a Process in the OS, identified with an ID and a name
 {
 public:
-	Process(String name, int pid, int currentLine, int totalLines, time_t timeStarted, time_t timeFinished); // Constructor of Process
+	struct RequirementFlags
+	{
+		bool requireFiles;
+		int numFiles;
+		bool requireMemory;
+		int memoryRequired;
+	};
+
+	enum ProcessState // Enum representing the state of the process
+	{
+		READY,
+		RUNNING,
+		WAITING,
+		FINISHED
+	};
+
+	Process(String name, int pid); // Constructor of Process
+	void addCommand(ICommand::CommandType commandType); // Add a command to the process
+	void executeCurrentCommand() const; // Execute the current command of the process
+	void moveToNextLine(); // Move to next line of command
+	void populatePrintCommands(int limit); // Fill process with Print test commands
+
+	bool isFinished() const; // Check if the process is finished
+	int getRemainingTime() const; // Get the remaining time of the process
+	int getCommandCounter() const; // Get the command counter (Current Line of the Process)
+	int getTotalCommandCounter() const; // Get the total commands in Process
+	int getCPUCoreID() const; // Get the CPU core ID
+	ProcessState getState() const; // Get the state of the process
 	String getName() const; // Getter for name
 	int getPid() const; // Get the process ID
-	int getCurrentLine() const; // Get the current line of the process
-	int getTotalLines() const; // Get the total lines of the process
+
+	//int getCurrentLine() const; // Get the current line of the process
+	//int getTotalLines() const; // Get the total lines of the process
 	time_t getTimeStarted() const; // Get the time the process started
 	time_t getTimeFinished() const; // Get the time the process finished
-	
-
 
 private:
 	String name; // Name of the process
 	int pid; // Process ID
-	int currentLine; // Current line of the process
-	int totalLines; // Total lines of the process
-	time_t timeStarted; // Time the process started
-	time_t timeFinished; // Time the process finished
+
+	typedef std::vector<std::shared_ptr<ICommand>> CommandList; // List of commands the process will execute
+	CommandList commandList;
+
+	int commandCounter;
+	// Current line of code the process is executing (cumulative of all commands)
+	// Is also equivalent to the number of processes/commands the process has executed
+
+	int cpuCoreID = -1; // ID of the CPU core the process is running on
+
+	mutable String textBuffer = "Process name: " + name + "\nLogs:\n\n"; // Buffer to store the logs of the process
+	// Mutable to bypass const restraint of functions that are not supposed to modify the object
+
+	RequirementFlags requirementFlags;
+	ProcessState currentState;
+
+
+	//int currentLine; // Current line of the process
+	//int totalLines; // Total lines of the process
+	time_t timeStarted; // Time the process started NOT when it was created (to be adjusted by Scheduler)
+	time_t timeFinished; // Time the process finished (to be adjusted by Scheduler)
 };
 

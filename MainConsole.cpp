@@ -53,6 +53,10 @@ void MainConsole::process()
 		Params = Command.substr(10); // Extracts the process name from the command
 		ScreenS(Params);
 	}
+	else if (Command == "screen -ls")
+	{
+		ScreenLS();
+	}
 	else if (Command == "clear")
 	{
 		Clear();

@@ -1,16 +1,114 @@
 #include "Process.h"
+#include <fstream>
+#include "PrintCommand.h"
+#include <filesystem>
+#include <iostream>
 
-Process::Process(String name, int pid, int currentLine, int totalLines, time_t timeStarted, time_t timeFinished) : name(name), pid(pid), currentLine(currentLine), totalLines(totalLines), timeStarted(timeStarted), timeFinished(timeFinished) {}
+Process::Process(String name, int pid) : name(name), pid(pid) {}
 
-String Process::getName() const { return name; }
+String Process::getName() const
+{
+	return name;
+}
 
-int Process::getPid() const { return pid; }
+int Process::getPid() const
+{
+	return pid;
+}
 
-int Process::getCurrentLine() const { return currentLine; }
+int Process::getCommandCounter() const
+{
+	return this->commandCounter;
+}
 
-int Process::getTotalLines() const { return totalLines; }
+int Process::getRemainingTime() const // Remaining commands/time in the command list
+{
+	return this->commandList.size() - this->commandCounter;
+}
 
-time_t Process::getTimeStarted() const { return timeStarted; }
+int Process::getCPUCoreID() const
+{
+	return this->cpuCoreID;
+}
 
-time_t Process::getTimeFinished() const { return timeFinished; }
+Process::ProcessState Process::getState() const
+{
+	return this->currentState;
+}
+
+time_t Process::getTimeStarted() const
+{
+	return this->timeStarted;
+}
+
+time_t Process::getTimeFinished() const
+{
+	return this->timeStarted;
+}
+
+int Process::getTotalCommandCounter() const
+{
+	return this->commandList.size();
+}
+
+
+bool Process::isFinished() const
+{
+	return this->commandCounter == this->commandList.size(); // If commandCounter is equal to the size of the commandList, the process is finished
+}
+
+void Process::addCommand(ICommand::CommandType commandType) // Add a command to the command list
+{
+	this->commandList.push_back(std::make_shared<ICommand>(pid, commandType));
+}
+
+void Process::executeCurrentCommand() const // Execute the current command in the command list
+{
+	if (this->commandCounter >= this->commandList.size()) { // If the command counter is greater than the size of the command list, return
+		std::cout << "Command List of process \""+name+"\" is already finished!" << std::endl;
+		return;
+	};
+
+	if (this->commandList[this->commandCounter]->getCommandType() == ICommand::PRINT)
+	{
+		//this->commandList[this->commandCounter]->execPrint();
+		// Attempt to cast the ICommand pointer to a PrintCommand pointer
+		PrintCommand* printCommand = dynamic_cast<PrintCommand*>(this->commandList[this->commandCounter].get());
+		if (printCommand)
+		{
+			this->textBuffer += printCommand->execPrint(this->getCPUCoreID()); // Print and store in process' textBuffer
+		}
+		if ((this->commandCounter+1) == this->commandList.size()) // If this command is the last command in the list, output the text buffer to a file
+		{
+			// Output text buffer as text file and clear it
+			String filePath = this->name + "_output.txt";
+			std::ofstream outFile(filePath);
+
+			if (outFile.is_open())
+			{
+				outFile << this->textBuffer;
+				outFile.close();
+			}
+			std::cout << "Log File Output of \""+name+"\" has been saved to: " << std::filesystem::absolute(filePath)<<"!" << std::endl;
+
+		}
+	}
+	else this->commandList[this->commandCounter]->execute();
+	
+}
+
+void Process::moveToNextLine() // Move to next command in the command list
+{
+	this->commandCounter++;
+}
+
+void Process::populatePrintCommands(int limit) // Limit determines number of print commands to put in process
+{
+	for (int i = 0; i < limit; i++)
+	{
+		String toPrint = "Hello World from " + this->name+"!";
+		const std::shared_ptr<ICommand> printCommand = std::make_shared<PrintCommand>(this->pid, toPrint);
+		this->commandList.push_back(printCommand);
+	}
+}
 

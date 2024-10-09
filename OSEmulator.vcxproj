@@ -137,9 +137,11 @@
     <ClCompile Include="clear.cpp" />
     <ClCompile Include="ConsoleManager.cpp" />
     <ClCompile Include="exit.cpp" />
+    <ClCompile Include="ICommand.cpp" />
     <ClCompile Include="initialize.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainConsole.cpp" />
+    <ClCompile Include="PrintCommand.cpp" />
     <ClCompile Include="process-smi.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="report-util.cpp" />
@@ -147,6 +149,7 @@
     <ClCompile Include="scheduler-test.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="cli-visuals.cpp" />
+    <ClCompile Include="test-cases.cpp" />
     <ClCompile Include="time-converter.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +157,8 @@
     <ClInclude Include="BaseScreen.h" />
     <ClInclude Include="Commands.h" />
     <ClInclude Include="ConsoleManager.h" />
+    <ClInclude Include="PrintCommand.h" />
+    <ClInclude Include="ICommand.h" />
     <ClInclude Include="MainConsole.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="TypeDefs.h" />

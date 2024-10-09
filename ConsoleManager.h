@@ -30,9 +30,12 @@ public:
 	bool isRunning() const;
 	void setRunning(bool running);
 
+	int getConsoleTableSize() const;
+
 	void registerScreen(std::shared_ptr<BaseScreen> console); // Register a console screen to the ConsoleTable
 	void switchToScreen(String screenName); // Switch to a console screen
 	void unregisterScreen(String screenName); // Unregister a console screen from the ConsoleTable
+	std::vector<std::shared_ptr<BaseScreen>> getAllProcessScreens() const; // Returns all base screens
 
 private:
 	ConsoleManager(); // Default constructor

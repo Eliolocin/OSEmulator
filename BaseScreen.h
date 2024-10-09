@@ -11,6 +11,7 @@ public:
 	void onEnabled() override;	// Called when the console is enabled
 	void display() override; // Called per frame
 	void process() override; // Process function
+	std::shared_ptr<Process> getProcess();
 
 private:
 	void printProcessInfo() const; // Print process information

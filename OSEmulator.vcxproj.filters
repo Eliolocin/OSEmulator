@@ -22,6 +22,30 @@
     <Filter Include="Source Files\classes">
       <UniqueIdentifier>{2e2f2970-70d9-49a2-9971-c81277bcaccb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\classes\icommands">
+      <UniqueIdentifier>{969d507d-d68a-45e5-8dcb-6399afc98a54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\classes\consoles">
+      <UniqueIdentifier>{5488da7d-1899-4a5d-a95b-c391c7286ebc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\classes\schedulers">
+      <UniqueIdentifier>{0b544ca5-f1a3-47fe-8cec-4401dea72941}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\icommands">
+      <UniqueIdentifier>{24b8e8cf-8d61-4a32-b784-a1b423d341a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\consoles">
+      <UniqueIdentifier>{ba043436-1c3a-468e-a4f9-7fb21e70b1c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\schedulers">
+      <UniqueIdentifier>{d76b5154-cd6f-4463-a73e-7d58e8c90c3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OS">
+      <UniqueIdentifier>{1055e17b-6057-4126-a625-9640bb64b29d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\classes\OS">
+      <UniqueIdentifier>{ced7dcbb-f0cc-4f6b-9948-ebfc31be99da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -48,52 +72,70 @@
     <ClCompile Include="cli-visuals.cpp">
       <Filter>Source Files\utilities</Filter>
     </ClCompile>
-    <ClCompile Include="AbsConsole.cpp">
-      <Filter>Source Files\classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Process.cpp">
-      <Filter>Source Files\classes</Filter>
-    </ClCompile>
-    <ClCompile Include="ConsoleManager.cpp">
-      <Filter>Source Files\classes</Filter>
-    </ClCompile>
     <ClCompile Include="screen.cpp">
       <Filter>Source Files\commands</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseScreen.cpp">
-      <Filter>Source Files\classes</Filter>
-    </ClCompile>
-    <ClCompile Include="MainConsole.cpp">
-      <Filter>Source Files\classes</Filter>
     </ClCompile>
     <ClCompile Include="time-converter.cpp">
       <Filter>Source Files\utilities</Filter>
     </ClCompile>
+    <ClCompile Include="ICommand.cpp">
+      <Filter>Source Files\classes\icommands</Filter>
+    </ClCompile>
+    <ClCompile Include="AbsConsole.cpp">
+      <Filter>Source Files\classes\consoles</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseScreen.cpp">
+      <Filter>Source Files\classes\consoles</Filter>
+    </ClCompile>
+    <ClCompile Include="MainConsole.cpp">
+      <Filter>Source Files\classes\consoles</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleManager.cpp">
+      <Filter>Source Files\classes\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="Process.cpp">
+      <Filter>Source Files\classes\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="process-smi.cpp">
+      <Filter>Source Files\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="PrintCommand.cpp">
+      <Filter>Source Files\classes\icommands</Filter>
+    </ClCompile>
+    <ClCompile Include="test-cases.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Commands.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utilities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TypeDefs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AbsConsole.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\consoles</Filter>
     </ClInclude>
     <ClInclude Include="BaseScreen.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\consoles</Filter>
     </ClInclude>
-    <ClInclude Include="ConsoleManager.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="PrintCommand.h">
+      <Filter>Header Files\icommands</Filter>
     </ClInclude>
-    <ClInclude Include="Process.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="ICommand.h">
+      <Filter>Header Files\icommands</Filter>
     </ClInclude>
     <ClInclude Include="MainConsole.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\consoles</Filter>
+    </ClInclude>
+    <ClInclude Include="Commands.h">
+      <Filter>Header Files\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleManager.h">
+      <Filter>Header Files\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="Process.h">
+      <Filter>Header Files\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeDefs.h">
+      <Filter>Header Files\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities.h">
+      <Filter>Header Files\OS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

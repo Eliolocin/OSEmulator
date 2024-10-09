@@ -8,6 +8,7 @@ using namespace std;
 #include "Commands.h" // Header file containing ALL console command declarations
 #include "Utilities.h" // Header file containing ALL utility function declarations
 
+
 int main()
 {
 	string OSName = "CSOPESY";
@@ -16,6 +17,7 @@ int main()
     
 	// WelcomeUser(OSName); // Prints welcome message including Header ASCII and OS Name
 	ConsoleManager::initialize(); // Initialize ConsoleManager Singleton
+	generateHundredPrints(10); // Generate 10 processes with 100 print commands each
 
 	while (running)
 	{

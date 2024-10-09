@@ -11,4 +11,5 @@ void SchedulerStop();
 void SchedulerTest();
 void ScreenR(std::string processName);
 void ScreenS(std::string processName);
+void ScreenLS();
 void ProcessSmi();

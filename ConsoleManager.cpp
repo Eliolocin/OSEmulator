@@ -5,6 +5,7 @@
 #include "AbsConsole.h"
 #include "MainConsole.h"
 #include "Utilities.h"
+#include <windows.h>
 
 ConsoleManager* ConsoleManager::sharedInstance = nullptr;
 ConsoleManager* ConsoleManager::getInstance()
@@ -90,8 +91,22 @@ void ConsoleManager::process() const
 	}
 }
 
+std::vector<std::shared_ptr<BaseScreen>> ConsoleManager::getAllProcessScreens() const
+{
+	std::vector<std::shared_ptr<BaseScreen>> screens;
+	for (const auto& console : consoleTable)
+	{
+		if (auto screen = std::dynamic_pointer_cast<BaseScreen>(console.second))
+		{
+			screens.push_back(screen);
+		}
+	}
+	return screens;
+}
+
 void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef)
 {
+	//OutputDebugString(screenRef->getName().c_str());
 	if (this->consoleTable.contains(screenRef->getName()))
 	{
 		std::cout << "Screen with name " << screenRef->getName() << " already exists." << std::endl;
@@ -101,6 +116,13 @@ void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef)
 		this->consoleTable[screenRef->getName()] = screenRef;
 	}
 }
+
+int ConsoleManager::getConsoleTableSize() const // Return number of consoles in the ConsoleTable
+{
+	return this->consoleTable.size();
+}
+
+
 
 void ConsoleManager::unregisterScreen(String screenName)
 {
