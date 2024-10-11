@@ -102,6 +102,12 @@
     <ClCompile Include="PrintCommand.cpp">
       <Filter>Source Files\classes\icommands</Filter>
     </ClCompile>
+    <ClCompile Include="GlobalScheduler.cpp">
+      <Filter>Source Files\classes\schedulers</Filter>
+    </ClCompile>
+    <ClCompile Include="SchedulerWorker.cpp">
+      <Filter>Source Files\classes\schedulers</Filter>
+    </ClCompile>
     <ClCompile Include="test-cases.cpp">
       <Filter>Source Files\utilities</Filter>
     </ClCompile>
@@ -136,6 +142,15 @@
     </ClInclude>
     <ClInclude Include="Utilities.h">
       <Filter>Header Files\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="AbsScheduler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalScheduler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SchedulerWorker.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -7,6 +7,7 @@ using namespace std;
 #include "ConsoleManager.h"
 #include "Commands.h" // Header file containing ALL console command declarations
 #include "Utilities.h" // Header file containing ALL utility function declarations
+#include "GlobalScheduler.h"
 
 
 int main()
@@ -17,7 +18,12 @@ int main()
     
 	// WelcomeUser(OSName); // Prints welcome message including Header ASCII and OS Name
 	ConsoleManager::initialize(); // Initialize ConsoleManager Singleton
-	generateHundredPrints(10); // Generate 10 processes with 100 print commands each
+
+	GlobalScheduler scheduler(4);
+
+	generateHundredPrints(10, scheduler); // Generate 10 processes with 100 print commands each
+
+	scheduler.start();
 
 	while (running)
 	{
@@ -27,6 +33,7 @@ int main()
 		running = ConsoleManager::getInstance()->isRunning();
 	}
 
+	scheduler.stop();
 	return 0;
 }
 

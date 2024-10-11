@@ -4,6 +4,12 @@
 #include <filesystem>
 #include <iostream>
 
+#include <chrono>
+#include <ctime>
+#include <memory> 
+#include <thread>
+
+
 Process::Process(String name, int pid) : name(name), pid(pid) {}
 
 String Process::getName() const
@@ -62,7 +68,25 @@ void Process::addCommand(ICommand::CommandType commandType) // Add a command to 
 	this->commandList.push_back(std::make_shared<ICommand>(pid, commandType));
 }
 
-void Process::executeCurrentCommand() const // Execute the current command in the command list
+void Process::setCPUCoreID(int coreID) {
+	this->cpuCoreID = coreID;
+}
+
+void Process::setTimeStarted() {
+    auto now = std::chrono::system_clock::now();
+    this->timeStarted = std::chrono::system_clock::to_time_t(now);
+}
+
+void Process::setTimeFinished() {
+    auto now = std::chrono::system_clock::now();
+    this->timeStarted = std::chrono::system_clock::to_time_t(now);
+}
+
+void Process::setState(ProcessState state) {
+	this->currentState = state;
+}
+
+void Process::executeCurrentCommand() const// Execute the current command in the command list
 {
 	if (this->commandCounter >= this->commandList.size()) { // If the command counter is greater than the size of the command list, return
 		std::cout << "Command List of process \""+name+"\" is already finished!" << std::endl;
@@ -89,12 +113,13 @@ void Process::executeCurrentCommand() const // Execute the current command in th
 				outFile << this->textBuffer;
 				outFile.close();
 			}
-			std::cout << "Log File Output of \""+name+"\" has been saved to: " << std::filesystem::absolute(filePath)<<"!" << std::endl;
+			//std::cout << "Log File Output of \"" + name + "\" has been saved to: " << std::filesystem::absolute(filePath) << "!" << std::endl;
 
 		}
 	}
 	else this->commandList[this->commandCounter]->execute();
-	
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(250));
 }
 
 void Process::moveToNextLine() // Move to next command in the command list

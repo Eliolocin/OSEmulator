@@ -9,18 +9,22 @@
 #include <ctime>
 #include <chrono>
 #include <iomanip>
+#include "GlobalScheduler.h"
 
-void generateHundredPrints(int numOfProcesses)
-{
-	for (int i = 0; i < numOfProcesses; i++)
-	{
-		String processName = "process_" + std::to_string(i);
-		Process newProcess = Process(processName, i); // PID Naming Convention: Number of Consoles/Processes present+1
-		newProcess.populatePrintCommands(100); // Add dummy Print commands
-		BaseScreen newScreen = BaseScreen(std::make_shared<Process>(newProcess), processName);
+void generateHundredPrints(int numOfProcesses, GlobalScheduler& scheduler) {
+    for (int i = 0; i < numOfProcesses; i++) {
+        String processName = "process_" + std::to_string(i);
+        auto newProcess = std::make_shared<Process>(processName, i);  // Create new process
+        newProcess->populatePrintCommands(100);  // Add dummy Print commands
 
-		ConsoleManager::getInstance()->registerScreen(std::make_shared<BaseScreen>(newScreen));
-		std::cout << "Process \"" << processName << "\" generated w/ 100 print commands." << std::endl;
-	}
-	std::cout << "\n";
+        BaseScreen newScreen(newProcess, processName);
+        ConsoleManager::getInstance()->registerScreen(std::make_shared<BaseScreen>(newScreen));
+
+        // Add the process to the scheduler's queue
+        scheduler.scheduleProcess(newProcess);
+
+        std::cout << "Process \"" << processName << "\" generated w/ 100 print commands and added to the scheduler queue." << std::endl;
+    }
+    std::cout << "\n";
 }
+

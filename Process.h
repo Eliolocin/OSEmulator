@@ -40,6 +40,12 @@ public:
 	time_t getTimeStarted() const; // Get the time the process started
 	time_t getTimeFinished() const; // Get the time the process finished
 
+	void setCPUCoreID(int coreID); // Set the CPU core ID
+	void setTimeStarted();  // Set the start time
+	void setTimeFinished();  // Set the finish time
+	void setState(ProcessState state);  // Set the process state
+
+
 private:
 	String name; // Name of the process
 	int pid; // Process ID
@@ -47,22 +53,22 @@ private:
 	typedef std::vector<std::shared_ptr<ICommand>> CommandList; // List of commands the process will execute
 	CommandList commandList;
 
-	int commandCounter;
+	int commandCounter = 0;
 	// Current line of code the process is executing (cumulative of all commands)
 	// Is also equivalent to the number of processes/commands the process has executed
 
-	int cpuCoreID = -1; // ID of the CPU core the process is running on
+	int cpuCoreID = 0; // ID of the CPU core the process is running on
 
 	mutable String textBuffer = "Process name: " + name + "\nLogs:\n\n"; // Buffer to store the logs of the process
 	// Mutable to bypass const restraint of functions that are not supposed to modify the object
 
-	RequirementFlags requirementFlags;
-	ProcessState currentState;
+	RequirementFlags requirementFlags = { false, 0, false, 0 };  // Default values
+	ProcessState currentState = ProcessState::READY;  // Start in READY state
 
 
 	//int currentLine; // Current line of the process
 	//int totalLines; // Total lines of the process
-	time_t timeStarted; // Time the process started NOT when it was created (to be adjusted by Scheduler)
-	time_t timeFinished; // Time the process finished (to be adjusted by Scheduler)
+	time_t timeStarted = 0; // Time the process started NOT when it was created (to be adjusted by Scheduler)
+	time_t timeFinished = 0; // Time the process finished (to be adjusted by Scheduler)
 };
 
