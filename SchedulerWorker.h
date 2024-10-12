@@ -18,6 +18,8 @@ public:
     void processExecution();  // Main function to execute process
     void notify();  // Add this method to wake up the worker
 
+	int getWorkerId();  // Get the worker ID (Core ID)
+
 
 
 private:

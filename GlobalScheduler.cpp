@@ -9,6 +9,7 @@
 // Constructor initializes the number of workers (cores)
 GlobalScheduler::GlobalScheduler(int numWorkers) {
     for (int i = 0; i < numWorkers; ++i) {
+        //std::cout << "CPU \"" << i << "\" added!" << std::endl;
         workers.push_back(std::make_shared<SchedulerWorker>(i));  // Create workers (CPU cores)
     }
 }
@@ -16,6 +17,7 @@ GlobalScheduler::GlobalScheduler(int numWorkers) {
 // Add a process to the queue for scheduling
 void GlobalScheduler::scheduleProcess(std::shared_ptr<Process> process) {
     std::lock_guard<std::mutex> lock(queueMutex);
+    //std::cout << "Process \"" << process->getName() << "\" pushed to queue!" << std::endl;
     processQueue.push(process);  // Add the process to the queue
 }
 
@@ -40,11 +42,13 @@ void GlobalScheduler::dispatchProcesses() {
 
                 // Get the first process in the queue (FCFS)
                 auto process = processQueue.front();
+                //std::cout << "Process \"" << process->getName() << "\" popped from queue!" << std::endl;
                 processQueue.pop();  // Remove it from the queue
 
                 // Debug
                 // std::cout << "Assigning process " << process->getName() << " to worker " << worker->getWorkerID() << std::endl;
                 // Assign the process to the worker and notify the worker to start
+                //std::cout << "Process \"" << process->getName() << "\" assigned to " << worker->getWorkerId() << std::endl;
                 worker->assignProcess(process);
                 worker->notify();  // Notify the worker thread to start processing
             }

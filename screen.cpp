@@ -60,13 +60,20 @@ void ScreenLS()
 
 		if (attachedProcess->isFinished())
 		{
-			lsString = attachedProcess->getName() + "\t(" + convertTime(attachedProcess->getTimeStarted()) + ")\t Core: " + cpuCore + "\t" + currentLine + " / " + totalLines;
+			lsString = attachedProcess->getName() + "\t(" + convertTime(attachedProcess->getTimeFinished()) + ")\t Core: " + cpuCore + "\t" + currentLine + " / " + totalLines;
 			finishedProcessList.push_back(lsString);
 		}
 		else
 		{
-			lsString = attachedProcess->getName() + "\t(" + convertTime(attachedProcess->getTimeFinished())+")\t Core: "+cpuCore+"\t"+currentLine+" / "+ totalLines;
-			runningProcessList.push_back(lsString);
+			// If attached process has no Time Started yet
+			//if (attachedProcess->getTimeStarted() == 0)
+				//lsString = attachedProcess->getName() + "\t" + "Not Yet Started" + "\t\t\t Core: -1" + "\t" + currentLine + " / " + totalLines;
+			if (attachedProcess->getTimeStarted() != 0)
+			{ // Process is running
+				lsString = attachedProcess->getName() + "\t(" + convertTime(attachedProcess->getTimeStarted()) + ")\t Core: " + cpuCore + "\t" + currentLine + " / " + totalLines;
+				runningProcessList.push_back(lsString);
+			}
+				
 		}
 		
 		// Access the elements of BaseScreen using the screen pointer

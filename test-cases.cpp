@@ -21,6 +21,7 @@ void generateHundredPrints(int numOfProcesses, GlobalScheduler& scheduler) {
         ConsoleManager::getInstance()->registerScreen(std::make_shared<BaseScreen>(newScreen));
 
         // Add the process to the scheduler's queue
+        //std::cout << processName << "\" ADDED FIRST" << std::endl;
         scheduler.scheduleProcess(newProcess);
 
         std::cout << "Process \"" << processName << "\" generated w/ 100 print commands and added to the scheduler queue." << std::endl;

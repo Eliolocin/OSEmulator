@@ -78,4 +78,9 @@ void SchedulerWorker::processExecution() {
             cv.notify_all();  // Notify that the worker is available again
         }
     }
+
+}
+
+int SchedulerWorker::getWorkerId() {
+    return workerId;
 }

@@ -93,15 +93,21 @@ void ConsoleManager::process() const
 
 std::vector<std::shared_ptr<BaseScreen>> ConsoleManager::getAllProcessScreens() const
 {
-	std::vector<std::shared_ptr<BaseScreen>> screens;
-	for (const auto& console : consoleTable)
-	{
-		if (auto screen = std::dynamic_pointer_cast<BaseScreen>(console.second))
-		{
-			screens.push_back(screen);
-		}
-	}
-	return screens;
+    std::vector<std::shared_ptr<BaseScreen>> screens;
+    for (const auto& console : consoleTable)
+    {
+        if (auto screen = std::dynamic_pointer_cast<BaseScreen>(console.second))
+        {
+            screens.push_back(screen);
+        }
+    }
+    
+    // Sort the screens in alphabetical order based on their names
+    std::sort(screens.begin(), screens.end(), [](const auto& screen1, const auto& screen2) {
+        return screen1->getName() < screen2->getName();
+    });
+    
+    return screens;
 }
 
 void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef)
