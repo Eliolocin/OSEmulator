@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Utilities.h"
 #include "Commands.h"
+#include "Config.h"
 #include "ConsoleManager.h"
 
 MainConsole::MainConsole() : AbsConsole("MAIN_CONSOLE") {}
@@ -27,52 +28,74 @@ void MainConsole::process()
 	std::getline(std::cin, Command);
 	SetTextColor("cyan");
 
-	if (Command == "initialize")
+	if(!isInitialized())
 	{
-		Initialize();
-	}
-	else if (Command == "report-util")
+		if (Command == "initialize")
+		{
+			Initialize();
+		}
+		else if (Command == "exit")
+		{
+			Exit();
+			ConsoleManager::getInstance()->setRunning(false); // Exits while loop, ending the program
+		}
+		else
+		{
+			SetTextColor("red");
+			std::cout << "Please initialize the OS first with \"initialize\"!\n";
+		}
+	}else
 	{
-		ReportUtil();
+		if (Command == "initialize")
+		{
+			Initialize();
+		}
+		else if (Command == "report-util")
+		{
+			ReportUtil();
+		}
+		else if (Command == "scheduler-stop")
+		{
+			SchedulerStop();
+		}
+		else if (Command == "scheduler-test")
+		{
+			SchedulerTest();
+		}
+		else if (Command.substr(0, 10) == "screen -r ")
+		{
+			Params = Command.substr(10); // Extracts the process name from the command
+			ScreenR(Params);
+		}
+		else if (Command.substr(0, 10) == "screen -s ")
+		{
+			Params = Command.substr(10); // Extracts the process name from the command
+			ScreenS(Params);
+		}
+		else if (Command == "screen -ls")
+		{
+			ScreenLS(true);
+		}
+		else if (Command == "clear")
+		{
+			Clear();
+		}
+		else if (Command == "process-smi")
+		{
+			ProcessSmi();
+		}
+		else if (Command == "exit")
+		{
+			Exit();
+			ConsoleManager::getInstance()->setRunning(false); // Exits while loop, ending the program
+		}
+		else
+		{
+			SetTextColor("red");
+			std::cout << "'" << Command << "' is an invalid or unrecognized command, please try again.\n";
+		}
 	}
-	else if (Command == "scheduler-stop")
-	{
-		SchedulerStop();
-	}
-	else if (Command == "scheduler-test")
-	{
-		SchedulerTest();
-	}
-	else if (Command.substr(0,10) == "screen -r ")
-	{
-		Params = Command.substr(10); // Extracts the process name from the command
-		ScreenR(Params);
-	}
-	else if (Command.substr(0, 10) == "screen -s ")
-	{
-		Params = Command.substr(10); // Extracts the process name from the command
-		ScreenS(Params);
-	}
-	else if (Command == "screen -ls")
-	{
-		ScreenLS();
-	}
-	else if (Command == "clear")
-	{
-		Clear();
-	}
-	else if (Command == "process-smi")
-	{
-		ProcessSmi();
-	}
-	else if (Command == "exit")
-	{
-		Exit();
-		ConsoleManager::getInstance()->setRunning(false); // Exits while loop, ending the program
-	}
-	else
-	{
-		SetTextColor("red");
-		std::cout << "'" << Command << "' is an invalid or unrecognized command, please try again.\n";
-	}
+		
+
+
 }

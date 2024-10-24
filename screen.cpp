@@ -10,6 +10,7 @@
 #include <ctime>
 #include <chrono>
 #include <iomanip>
+#include "Config.h"
 
 
 
@@ -36,10 +37,10 @@ void ScreenS(String processName)
 	BaseScreen newScreen = BaseScreen(std::make_shared<Process>(newProcess), processName);
 
 	ConsoleManager::getInstance()->registerScreen(std::make_shared<BaseScreen>(newScreen));
-	ConsoleManager::getInstance()->switchConsole(processName);
+	//ConsoleManager::getInstance()->switchConsole(processName);
 }
 
-void ScreenLS()
+String ScreenLS(bool printToConsole)
 {
 	// Get all processes through their console
 	std::vector<std::shared_ptr<BaseScreen>> processScreenList = ConsoleManager::getInstance()->getAllProcessScreens();
@@ -80,22 +81,44 @@ void ScreenLS()
 		// Example: screen->onEnabled();
 	}
 
-	std::cout << "--------------------------------" << std::endl;
+	int utilizedCPUs = runningProcessList.size();
+	int availableCPUS = getConfigNumCPU() - utilizedCPUs;// Total CPUs - utilizedCPUs
+	int cpuUtil = utilizedCPUs * 100 / getConfigNumCPU();// Calculated by getting Cores Used * 100 / Total Cores
+
+	std::ostringstream reportText; // Store everything printed into a single ostringstream
+
+	reportText << "CPU Utilization: " << cpuUtil << "%" << std::endl;
+	reportText << "Cores Utilized: " << utilizedCPUs << std::endl;
+	reportText << "Cores Available: " << availableCPUS << std::endl << std::endl;
+
+	reportText << "--------------------------------" << std::endl;
 	// Print all running processes
-	std::cout << "Running Processes: " << std::endl;
-	for (size_t i = 0; i < runningProcessList.size(); i++)
-	{
-		std::cout << runningProcessList[i] << std::endl;
-	}
+	reportText << "Running Processes: " << std::endl;
+	if (runningProcessList.size() == 0)
+		reportText << "N/A" << std::endl;
+	else
+		for (size_t i = 0; i < runningProcessList.size(); i++)
+		{
+			reportText << runningProcessList[i] << std::endl;
+		}
 
 	// Print all finished processes
-	std::cout << "\nFinished Processes: " << std::endl;
-	for (size_t i = 0; i < finishedProcessList.size(); i++)
-	{
-		std::cout << finishedProcessList[i] << std::endl;
-	}
-	std::cout << "--------------------------------" << std::endl;
+	reportText << "\nFinished Processes: " << std::endl;
+	if (finishedProcessList.size() == 0)
+		reportText << "N/A" << std::endl;
+	else 
+		for (size_t i = 0; i < finishedProcessList.size(); i++)
+		{
+			reportText << finishedProcessList[i] << std::endl;
+		}
+		
+	
+	reportText << "--------------------------------" << std::endl;
 
+	// Print the report text
+	if (printToConsole)
+		std::cout << reportText.str() << std::endl;
 
-
+	// Return for printing in report-util command
+	return reportText.str();
 }

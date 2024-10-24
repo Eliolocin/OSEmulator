@@ -135,6 +135,7 @@
     <ClCompile Include="AbsConsole.cpp" />
     <ClCompile Include="BaseScreen.cpp" />
     <ClCompile Include="clear.cpp" />
+    <ClCompile Include="config.cpp" />
     <ClCompile Include="ConsoleManager.cpp" />
     <ClCompile Include="exit.cpp" />
     <ClCompile Include="GlobalScheduler.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="AbsScheduler.h" />
     <ClInclude Include="BaseScreen.h" />
     <ClInclude Include="Commands.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="ConsoleManager.h" />
     <ClInclude Include="GlobalScheduler.h" />
     <ClInclude Include="PrintCommand.h" />
@@ -168,6 +170,9 @@
     <ClInclude Include="SchedulerWorker.h" />
     <ClInclude Include="TypeDefs.h" />
     <ClInclude Include="Utilities.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

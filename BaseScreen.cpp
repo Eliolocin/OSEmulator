@@ -39,6 +39,10 @@ void BaseScreen::process()
 	{
 		ConsoleManager::getInstance()->switchConsole(MAIN_CONSOLE);
 	}
+    else if (Command == "process-smi")
+    {
+        this->printProcessInfo();
+    }
 	else if (Command == "execute") // Test function that executes all of processes' commands manually using 'Main' thread
 	{
 		for (int i = 0; i < attachedProcess->getTotalCommandCounter(); i++)
@@ -56,16 +60,40 @@ void BaseScreen::process()
 
 void BaseScreen::printProcessInfo() const
 {
-	SetTextColor("white");
-	std::cout << "Process Name: " << attachedProcess->getName() << std::endl;
-	std::cout << "Process ID: " << attachedProcess->getPid() << std::endl << std::endl;
+    SetTextColor("white");
+    std::cout << "Process Name: " << attachedProcess->getName() << std::endl;
+    std::cout << "Process ID: " << attachedProcess->getPid() << std::endl << std::endl;
 
-	std::cout << "Current Line of Instruction: " << attachedProcess->getCommandCounter() << std::endl;
-	std::cout << "Total Lines of Instruction: " << (attachedProcess->getTotalCommandCounter()) << std::endl << std::endl;
+    std::cout << "Current Line of Instruction: " << attachedProcess->getCommandCounter() << std::endl;
+    std::cout << "Total Lines of Instruction: " << attachedProcess->getTotalCommandCounter() << std::endl << std::endl;
 
-	std::cout << "Time Started: " << convertTime(attachedProcess->getTimeStarted()) << std::endl;
-	std::cout << "Time Finished: " << convertTime(attachedProcess->getTimeFinished()) << std::endl << std::endl;
-	SetTextColor("yellow");
-	std::cout << "Type 'exit' to return to the main menu." << std::endl << std::endl;
-	//std::cout << "Time Finished: " << convertTime(attachedProcess->getTimeFinished()) << std::endl;
+    // Get the raw time values
+    time_t timeStarted = attachedProcess->getTimeStarted();
+    time_t timeFinished = attachedProcess->getTimeFinished();
+
+    // Check if timeStarted is 0 (Unix epoch)
+    if (timeStarted == 0)
+    {
+        std::cout << "Time Started: N/A" << std::endl;
+    }
+    else
+    {
+        std::cout << "Time Started: " << convertTime(timeStarted) << std::endl;
+    }
+
+    // Check if timeFinished is 0 (Unix epoch)
+    if (timeFinished == 0)
+    {
+        std::cout << "Time Finished: N/A" << std::endl;
+    }
+    else
+    {
+        std::cout << "Time Finished: " << convertTime(timeFinished) << std::endl;
+    }
+
+    if ((attachedProcess->getCommandCounter()) == attachedProcess->getTotalCommandCounter())
+        std::cout << "\nThis process has already finished!\n";
+
+    SetTextColor("yellow");
+    std::cout << "Type 'exit' to return to the main menu." << std::endl << std::endl;
 }

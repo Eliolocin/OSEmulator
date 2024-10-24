@@ -3,6 +3,7 @@
 #include "AbsConsole.h"
 #include "BaseScreen.h"
 #include "TypeDefs.h"
+#include "GlobalScheduler.h"
 
 const String MAIN_CONSOLE = "MAIN_CONSOLE";
 const String MARQUEE_CONSOLE = "MARQUEE_CONSOLE";
@@ -37,6 +38,8 @@ public:
 	void unregisterScreen(String screenName); // Unregister a console screen from the ConsoleTable
 	std::vector<std::shared_ptr<BaseScreen>> getAllProcessScreens() const; // Returns all base screens
 
+	void setGlobalScheduler(std::shared_ptr<GlobalScheduler> globalScheduler);
+
 private:
 	ConsoleManager(); // Default constructor
 	~ConsoleManager() = default; // Default destructor
@@ -47,6 +50,8 @@ private:
 	ConsoleTable consoleTable;
 	std::shared_ptr<AbsConsole> currentConsole;
 	std::shared_ptr<AbsConsole> previousConsole;
+
+	std::shared_ptr<GlobalScheduler> globalScheduler;
 
 	bool running = true;
 };

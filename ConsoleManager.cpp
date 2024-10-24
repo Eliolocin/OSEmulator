@@ -120,7 +120,28 @@ void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef)
 	else
 	{
 		this->consoleTable[screenRef->getName()] = screenRef;
+
+		// Push process to the process queue in the Global Scheduler
+		// GlobalScheduler::getInstance()->pushProcess(screenRef->getProcess());
+		//this->globalScheduler->scheduleProcess(screenRef->getProcess());
+		/*
+		if (this->globalScheduler)
+		{
+			this->globalScheduler->scheduleProcess(screenRef->getProcess());
+			std::cout << screenRef->getProcess()->getName();
+		}
+		else
+		{
+			std::cerr << "Global Scheduler is not initialized!" << std::endl;
+		}*/
+
+		this->switchConsole(screenRef->getName());
 	}
+}
+
+void ConsoleManager::setGlobalScheduler(std::shared_ptr<GlobalScheduler> globalScheduler)
+{
+	this->globalScheduler = globalScheduler;
 }
 
 int ConsoleManager::getConsoleTableSize() const // Return number of consoles in the ConsoleTable

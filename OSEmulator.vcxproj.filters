@@ -111,6 +111,9 @@
     <ClCompile Include="test-cases.cpp">
       <Filter>Source Files\utilities</Filter>
     </ClCompile>
+    <ClCompile Include="config.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbsConsole.h">
@@ -143,14 +146,22 @@
     <ClInclude Include="Utilities.h">
       <Filter>Header Files\OS</Filter>
     </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header Files\OS</Filter>
+    </ClInclude>
     <ClInclude Include="AbsScheduler.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\schedulers</Filter>
     </ClInclude>
     <ClInclude Include="GlobalScheduler.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\schedulers</Filter>
     </ClInclude>
     <ClInclude Include="SchedulerWorker.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\schedulers</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

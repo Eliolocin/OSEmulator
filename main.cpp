@@ -1,92 +1,36 @@
-// OSEmulator.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
-
-using namespace std;
 #include <iostream>
+
 #include "ConsoleManager.h"
-#include "Commands.h" // Header file containing ALL console command declarations
-#include "Utilities.h" // Header file containing ALL utility function declarations
 #include "GlobalScheduler.h"
+#include "Utilities.h"
+#include "Config.h"
 
-
-int main()
+int main() // Main entry point of OS
 {
-	string OSName = "CSOPESY";
-	string Command;
+    std::string OSName = "CSOPESY";
+    std::string configFile = "config.txt";
+    std::string Command;
     bool running = true; // Program keeps running while True
-    
-	// WelcomeUser(OSName); // Prints welcome message including Header ASCII and OS Name
-	ConsoleManager::initialize(); // Initialize ConsoleManager Singleton
 
-	GlobalScheduler scheduler(4);
+    ConsoleManager::initialize(); // Initialize ConsoleManager Singleton
+    loadConfig(configFile); // Load configuration file
+	GlobalScheduler scheduler(getConfigNumCPU()); // Create GlobalScheduler with number of CPU cores
 
-	generateHundredPrints(10, scheduler); // Generate 10 processes with 100 print commands each
 
-	scheduler.start();
+    // Test cases
+    //generateHundredPrints(10, scheduler); // Generate 10 processes with 100 print commands each
 
-	while (running)
-	{
-		ConsoleManager::getInstance()->process();
-		ConsoleManager::getInstance()->drawConsole();
+    scheduler.start(); // Start the scheduler using the shared pointer
 
-		running = ConsoleManager::getInstance()->isRunning();
-	}
+    while (running)
+    {
+        ConsoleManager::getInstance()->process();
+        ConsoleManager::getInstance()->drawConsole();
 
-	scheduler.stop();
-	return 0;
+        running = ConsoleManager::getInstance()->isRunning();
+    }
+
+    scheduler.stop(); // Stop the scheduler using the shared pointer
+
+    return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
-
-/*
-SetTextColor("green");
-std::cout << "Enter a command: ";
-SetTextColor("white");
-std::cin >> Command;
-SetTextColor("cyan");
-
-if (Command == "initialize")
-{
-	Initialize();
-}
-else if (Command == "report-util")
-{
-	ReportUtil();
-}
-else if (Command == "scheduler-stop")
-{
-	SchedulerStop();
-}
-else if (Command == "scheduler-test")
-{
-	SchedulerTest();
-}
-else if (Command == "screen")
-{
-	Screen();
-}
-else if (Command == "clear")
-{
-	Clear();
-}
-else if (Command == "exit")
-{
-	Exit();
-	Running = false; // Exits while loop, ending the program
-}
-else
-{
-	SetTextColor("red");
-	std::cout << "'" << Command << "' is an invalid or unrecognized command, please try again.\n";
-}
-*/

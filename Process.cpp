@@ -49,7 +49,7 @@ time_t Process::getTimeStarted() const
 
 time_t Process::getTimeFinished() const
 {
-	return this->timeStarted;
+	return this->timeFinished;
 }
 
 int Process::getTotalCommandCounter() const
@@ -79,7 +79,7 @@ void Process::setTimeStarted() {
 
 void Process::setTimeFinished() {
     auto now = std::chrono::system_clock::now();
-    this->timeStarted = std::chrono::system_clock::to_time_t(now);
+    this->timeFinished = std::chrono::system_clock::to_time_t(now);
 }
 
 void Process::setState(ProcessState state) {
@@ -102,6 +102,10 @@ void Process::executeCurrentCommand() const// Execute the current command in the
 		{
 			this->textBuffer += printCommand->execPrint(this->getCPUCoreID()); // Print and store in process' textBuffer
 		}
+
+
+		/* // Portion that prints out the process' text buffer to a file
+
 		if ((this->commandCounter+1) == this->commandList.size()) // If this command is the last command in the list, output the text buffer to a file
 		{
 			// Output text buffer as text file and clear it
@@ -115,7 +119,7 @@ void Process::executeCurrentCommand() const// Execute the current command in the
 			}
 			//std::cout << "Log File Output of \"" + name + "\" has been saved to: " << std::filesystem::absolute(filePath) << "!" << std::endl;
 
-		}
+		}*/
 	}
 	else this->commandList[this->commandCounter]->execute();
 
