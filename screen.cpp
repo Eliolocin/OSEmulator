@@ -11,7 +11,7 @@
 #include <chrono>
 #include <iomanip>
 #include "Config.h"
-
+#include "GlobalScheduler.h"
 
 
 void ScreenR(String processName)
@@ -19,7 +19,7 @@ void ScreenR(String processName)
 	ConsoleManager::getInstance()->switchConsole(processName);
 }
 
-void ScreenS(String processName)
+void ScreenS(String processName, GlobalScheduler* scheduler)
 {
 	auto now = std::chrono::system_clock::now();
 
@@ -32,12 +32,20 @@ void ScreenS(String processName)
 
 	int consolesPresent = (ConsoleManager::getInstance()->getConsoleTableSize() - 1); // Exclude main console from count
 
-	Process newProcess = Process(processName, consolesPresent); // PID Naming Convention: Number of Consoles/Processes present+1
-	newProcess.populatePrintCommands(100); // Add dummy Print commands
-	BaseScreen newScreen = BaseScreen(std::make_shared<Process>(newProcess), processName);
+	//Process newProcess = Process(processName, consolesPresent); // PID Naming Convention: Number of Consoles/Processes present+1
+	//newProcess.populatePrintCommands(100); // Add dummy Print commands
+	//BaseScreen newScreen = BaseScreen(std::make_shared<Process>(newProcess), processName);
+	auto newProcess = std::make_shared<Process>(processName, consolesPresent); // PID Naming Convention: Number of Consoles/Processes present + 1
+	newProcess->populatePrintCommands(100); // Add dummy Print commands
+	BaseScreen newScreen(newProcess, processName);
 
 	ConsoleManager::getInstance()->registerScreen(std::make_shared<BaseScreen>(newScreen));
 	//ConsoleManager::getInstance()->switchConsole(processName);
+	scheduler->scheduleProcess(newProcess);
+	std::cout << "Process \"" << processName << "\" created, registered with ConsoleManager, and added to scheduler queue." << std::endl;
+
+	// Confirm process is added to scheduler's queue
+	//std::cout << "Scheduler Queue Size After Adding: " << scheduler->getQueueSize() << std::endl;
 }
 
 String ScreenLS(bool printToConsole)

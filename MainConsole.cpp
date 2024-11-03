@@ -70,7 +70,14 @@ void MainConsole::process()
 		else if (Command.substr(0, 10) == "screen -s ")
 		{
 			Params = Command.substr(10); // Extracts the process name from the command
-			ScreenS(Params);
+			//ScreenS(Params);
+			GlobalScheduler* scheduler = ConsoleManager::getInstance()->getGlobalScheduler();
+			if (scheduler) {
+				ScreenS(Params, scheduler); // Pass the scheduler as a raw pointer
+			}
+			else {
+				std::cerr << "Scheduler is not available!" << std::endl;
+			}
 		}
 		else if (Command == "screen -ls")
 		{

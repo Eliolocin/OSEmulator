@@ -110,7 +110,7 @@ std::vector<std::shared_ptr<BaseScreen>> ConsoleManager::getAllProcessScreens() 
     return screens;
 }
 
-void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef)
+void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef, bool switchToScreen)
 {
 	//OutputDebugString(screenRef->getName().c_str());
 	if (this->consoleTable.contains(screenRef->getName()))
@@ -135,13 +135,23 @@ void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef)
 			std::cerr << "Global Scheduler is not initialized!" << std::endl;
 		}*/
 
-		this->switchConsole(screenRef->getName());
+		//this->switchConsole(screenRef->getName());
+		if (switchToScreen) {
+			this->switchConsole(screenRef->getName());
+		}
 	}
 }
 
-void ConsoleManager::setGlobalScheduler(std::shared_ptr<GlobalScheduler> globalScheduler)
-{
-	this->globalScheduler = globalScheduler;
+//void ConsoleManager::setGlobalScheduler(std::shared_ptr<GlobalScheduler> globalScheduler)
+//{
+	//this->globalScheduler = globalScheduler;
+//}
+void ConsoleManager::setGlobalScheduler(GlobalScheduler* scheduler) {
+	globalScheduler = scheduler;
+}
+
+GlobalScheduler* ConsoleManager::getGlobalScheduler() const {
+	return globalScheduler;
 }
 
 int ConsoleManager::getConsoleTableSize() const // Return number of consoles in the ConsoleTable

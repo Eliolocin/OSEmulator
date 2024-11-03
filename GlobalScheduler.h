@@ -7,7 +7,12 @@
 #include <condition_variable>
 #include <memory>
 #include <chrono>
+#include <atomic>
 
+enum SchedulerType {
+    FCFS,
+    ROUND_ROBIN
+};
 
 class GlobalScheduler : public AbsScheduler {
 public:
@@ -15,6 +20,10 @@ public:
     void scheduleProcess(std::shared_ptr<Process> process) override;  // FCFS algorithm implementation
     void start() override;  // Start the scheduler
     void stop() override;  // Stop the scheduler
+    
+    int getQueueSize(); // Add function to get queue size for debugging
+    void startTestMode(); // Starts generating dummy processes
+    void stopTestMode(); // Stops generating dummy processes
 
 private:
     std::queue<std::shared_ptr<Process>> processQueue;  // Queue to hold processes
@@ -22,4 +31,14 @@ private:
     void dispatchProcesses();  // Internal function to dispatch processes to available workers
     std::mutex queueMutex;  // Mutex for protecting access to the process queue
     std::thread schedulerThread;  // Thread for the scheduler
+    
+    std::condition_variable processAvailable;  // Notifies when a new process is added
+    std::atomic<bool> stopRequested{ false };  // Flag to signal the scheduler thread to stop
+    std::atomic<bool> testModeActive{ false }; // Flag to control scheduler-test
+    std::thread testThread; // Thread for scheduler-test to generate processes
+
+    void dispatchFCFS(); // FCFS scheduling method
+    void dispatchRoundRobin(); // Round Robin scheduling method
+    SchedulerType schedulerType; // New variable to store scheduler type
+    int quantumCycles; // Quantum cycles for Round Robin
 };

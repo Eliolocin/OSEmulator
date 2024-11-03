@@ -11,10 +11,14 @@ int main() // Main entry point of OS
     std::string configFile = "config.txt";
     std::string Command;
     bool running = true; // Program keeps running while True
+    loadConfig(configFile);
 
     ConsoleManager::initialize(); // Initialize ConsoleManager Singleton
-    loadConfig(configFile); // Load configuration file
-	GlobalScheduler scheduler(getConfigNumCPU()); // Create GlobalScheduler with number of CPU cores
+    GlobalScheduler scheduler(getConfigNumCPU()); // Create GlobalScheduler with number of CPU cores
+    //loadConfig(configFile); // Load configuration file
+	//GlobalScheduler scheduler(getConfigNumCPU()); // Create GlobalScheduler with number of CPU cores
+    //Pass scheduler to ConsoleManager for access within commands
+    ConsoleManager::getInstance()->setGlobalScheduler(&scheduler);
 
 
     // Test cases
@@ -31,6 +35,7 @@ int main() // Main entry point of OS
     }
 
     scheduler.stop(); // Stop the scheduler using the shared pointer
+    ConsoleManager::destroy(); // Clean up ConsoleManager
 
     return 0;
 }

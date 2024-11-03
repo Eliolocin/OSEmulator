@@ -33,12 +33,14 @@ public:
 
 	int getConsoleTableSize() const;
 
-	void registerScreen(std::shared_ptr<BaseScreen> console); // Register a console screen to the ConsoleTable
+	void registerScreen(std::shared_ptr<BaseScreen> console, bool switchToScreen = true); // Register a console screen to the ConsoleTable
 	void switchToScreen(String screenName); // Switch to a console screen
 	void unregisterScreen(String screenName); // Unregister a console screen from the ConsoleTable
 	std::vector<std::shared_ptr<BaseScreen>> getAllProcessScreens() const; // Returns all base screens
-
-	void setGlobalScheduler(std::shared_ptr<GlobalScheduler> globalScheduler);
+		
+	//void setGlobalScheduler(std::shared_ptr<GlobalScheduler> globalScheduler);
+	void setGlobalScheduler(GlobalScheduler* scheduler); // Set GlobalScheduler using a raw pointer
+	GlobalScheduler* getGlobalScheduler() const; // Get GlobalScheduler using a raw pointer
 
 private:
 	ConsoleManager(); // Default constructor
@@ -51,7 +53,8 @@ private:
 	std::shared_ptr<AbsConsole> currentConsole;
 	std::shared_ptr<AbsConsole> previousConsole;
 
-	std::shared_ptr<GlobalScheduler> globalScheduler;
+	//std::shared_ptr<GlobalScheduler> globalScheduler;
 
 	bool running = true;
+	GlobalScheduler* globalScheduler = nullptr; // Use raw pointer
 };

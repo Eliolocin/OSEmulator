@@ -141,3 +141,7 @@ void Process::populatePrintCommands(int limit) // Limit determines number of pri
 	}
 }
 
+// Round Robin
+void Process::setRemainingQuantum(int quantum) {
+	remainingQuantum = quantum;
+}

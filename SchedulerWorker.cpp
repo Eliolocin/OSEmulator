@@ -11,6 +11,9 @@
 #include "TypeDefs.h"
 #include <sstream>
 #include <ctime>
+#include "GlobalScheduler.h"
+#include "ConsoleManager.h"
+#include "Config.h"
 
 
 SchedulerWorker::SchedulerWorker(int id) : workerId(id), running(false), busy(false) {}
@@ -47,38 +50,44 @@ void SchedulerWorker::notify() {
 void SchedulerWorker::processExecution() {
     while (running) {
         std::unique_lock<std::mutex> lock(mtx);
-        // Wait for a process to be assigned
         cv.wait(lock, [this] { return assignedProcess || !running; });
 
         if (assignedProcess) {
-            // Debug: Log which worker (core) is starting to process which task
-            // std::cout << "Worker " << workerId << " starting process " << assignedProcess->getName() << "\n" << std::endl;
-
-            // Set the process start details
             assignedProcess->setCPUCoreID(workerId);
             assignedProcess->setTimeStarted();
             assignedProcess->setState(Process::RUNNING);
 
-            // Execute all commands in the process
+            // Reset the process quantum for Round Robin
+            int quantumCycles = getConfigQuantumCycles();  // Fetch quantum from config
+            assignedProcess->resetQuantum(quantumCycles);
+
             while (assignedProcess->getCommandCounter() < assignedProcess->getTotalCommandCounter()) {
+                // Execute one command and decrement quantum
                 assignedProcess->executeCurrentCommand();
                 assignedProcess->moveToNextLine();
+                assignedProcess->decrementQuantum();
+
+                // If quantum expires, pause execution and requeue
+                if (assignedProcess->getRemainingQuantum() <= 0) {
+                    assignedProcess->setState(Process::READY);  // Set back to READY
+                    ConsoleManager::getInstance()->getGlobalScheduler()->scheduleProcess(assignedProcess);  // Re-queue
+                    assignedProcess = nullptr;
+                    busy = false;
+                    cv.notify_all();
+                    break;
+                }
             }
 
-            // Debug: Log when a process finishes
-            // std::cout << "Worker " << workerId << " finished process " << assignedProcess->getName() << "\n" << std::endl;
-
-            // Mark process as finished when done
-            assignedProcess->setTimeFinished();
-            assignedProcess->setState(Process::FINISHED);
-
-            // Mark worker as no longer busy
-            assignedProcess = nullptr;  // Clear the current process
-            busy = false;  // Set worker to not busy
-            cv.notify_all();  // Notify that the worker is available again
+            // If process finished all commands, mark it as finished
+            if (assignedProcess && assignedProcess->isFinished()) {
+                assignedProcess->setTimeFinished();
+                assignedProcess->setState(Process::FINISHED);
+                assignedProcess = nullptr;
+                busy = false;
+                cv.notify_all();
+            }
         }
     }
-
 }
 
 int SchedulerWorker::getWorkerId() {

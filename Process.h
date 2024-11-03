@@ -45,7 +45,11 @@ public:
 	void setTimeFinished();  // Set the finish time
 	void setState(ProcessState state);  // Set the process state
 
-
+	// Round Robin related methods
+	int getRemainingQuantum() const { return remainingQuantum; } // Get the remaining quantum for Round Robin
+	void setRemainingQuantum(int quantum); // Set the remaining quantum for Round Robin
+	void decrementQuantum() { if (remainingQuantum > 0) remainingQuantum--; } // Decrement the remaining quantum by 1
+	void resetQuantum(int quantumCycles) { remainingQuantum = quantumCycles; }
 private:
 	String name; // Name of the process
 	int pid; // Process ID
@@ -70,5 +74,7 @@ private:
 	//int totalLines; // Total lines of the process
 	time_t timeStarted = 0; // Time the process started NOT when it was created (to be adjusted by Scheduler)
 	time_t timeFinished = 0; // Time the process finished (to be adjusted by Scheduler)
+
+	int remainingQuantum = 0; // Quantum time left for Round Robin scheduling
 };
 
