@@ -142,7 +142,7 @@ void SchedulerWorker::processExecution() {
                     assignedProcess = nullptr;
                     busy = false;
                     //cv.notify_all();
-                    ConsoleManager::getInstance()->getGlobalScheduler()->notifyWorkerFree();
+                    //ConsoleManager::getInstance()->getGlobalScheduler()->notifyWorkerFree();
                 }
             }
 
@@ -150,9 +150,9 @@ void SchedulerWorker::processExecution() {
             assignedProcess = nullptr;
             busy = false;
             //busy.store(false);
-            //cv.notify_all();
+            cv.notify_all();
             // Notify scheduler that the worker is free to take a new process
-            ConsoleManager::getInstance()->getGlobalScheduler()->notifyWorkerFree();
+            //ConsoleManager::getInstance()->getGlobalScheduler()->notifyWorkerFree();
             //std::cout << "[Worker " << workerId << "] Available for new process. Notifying scheduler." << std::endl;
         }
     }

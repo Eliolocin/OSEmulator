@@ -128,7 +128,7 @@ void GlobalScheduler::startTestMode() {
 
             this->scheduleProcess(newProcess);
             //std::cout << "Scheduler Queue Size After Adding: " << this->getQueueSize() << std::endl;
-            std::cout << "Generated dummy process: " << processName << " with " << instructionCount << " instructions." << std::endl;
+            //std::cout << "Generated dummy process: " << processName << " with " << instructionCount << " instructions." << std::endl;
         }
      }).detach(); // Detach the thread
 }
