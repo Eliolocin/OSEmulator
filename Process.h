@@ -1,6 +1,8 @@
 #pragma once
 #include "TypeDefs.h"
 #include "ICommand.h"
+#include "Config.h"
+
 class Process // Class representing a Process in the OS, identified with an ID and a name
 {
 public:
@@ -22,7 +24,7 @@ public:
 
 	Process(String name, int pid); // Constructor of Process
 	void addCommand(ICommand::CommandType commandType); // Add a command to the process
-	void executeCurrentCommand() const; // Execute the current command of the process
+	void executeCurrentCommand(); // Execute the current command of the process
 	void moveToNextLine(); // Move to next line of command
 	void populatePrintCommands(int limit); // Fill process with Print test commands
 
@@ -40,6 +42,9 @@ public:
 	time_t getTimeStarted() const; // Get the time the process started
 	time_t getTimeFinished() const; // Get the time the process finished
 
+	int getDelayCounter() const; // Get the delay counter
+	void setDelayCounter(int remainingDelay); // Set the delay counter
+
 	void setCPUCoreID(int coreID); // Set the CPU core ID
 	void setTimeStarted();  // Set the start time
 	void setTimeFinished();  // Set the finish time
@@ -53,6 +58,8 @@ public:
 private:
 	String name; // Name of the process
 	int pid; // Process ID
+
+	int delayCounter = getConfigDelayPerExec(); // Delay counter to simulate delay between commands
 
 	typedef std::vector<std::shared_ptr<ICommand>> CommandList; // List of commands the process will execute
 	CommandList commandList;

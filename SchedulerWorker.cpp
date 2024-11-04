@@ -104,6 +104,14 @@ void SchedulerWorker::processExecution() {
             if (schedulerType == "fcfs") {
                 // FCFS: Execute the entire process without interruption
                 while (assignedProcess->getCommandCounter() < assignedProcess->getTotalCommandCounter()) {
+
+					if (assignedProcess->getDelayCounter() > 0) {
+						assignedProcess->setDelayCounter(assignedProcess->getDelayCounter() - 1);
+						continue; // Skip iteration if delay is not 0
+					}
+                    // Reset delay counter and execute command if delay is 0
+					assignedProcess->setDelayCounter(getConfigDelayPerExec()); 
+
                     assignedProcess->executeCurrentCommand();
                     assignedProcess->moveToNextLine();
                 }
@@ -120,6 +128,13 @@ void SchedulerWorker::processExecution() {
 
                 while (assignedProcess->getCommandCounter() < assignedProcess->getTotalCommandCounter()) {
                     // Execute one command and decrement quantum
+                    if (assignedProcess->getDelayCounter() > 0) {
+                        assignedProcess->setDelayCounter(assignedProcess->getDelayCounter() - 1);
+                        continue; // Skip iteration if delay is not 0
+                    }
+                    // Reset delay counter and execute command if delay is 0
+                    assignedProcess->setDelayCounter(getConfigDelayPerExec());
+
                     assignedProcess->executeCurrentCommand();
                     assignedProcess->moveToNextLine();
                     assignedProcess->decrementQuantum();

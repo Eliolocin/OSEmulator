@@ -112,23 +112,33 @@ void GlobalScheduler::startTestMode() {
         int maxInstructions = getConfigMaxIns();
 
         while (testModeActive) {
-            std::this_thread::sleep_for(std::chrono::seconds(batchFrequency)); // Wait based on batch frequency
+            if(getDelayCounter() > 0)
+            {
+				setDelayCounter(getDelayCounter()-1);
+			} // Do not create new process if delay counter is greater than 0
+            else
+            {
+                // Restart delay counter and make new process if delay counter is 0 or less
+                setDelayCounter(getConfigBatchProcessFreq());
+                //std::this_thread::sleep_for(std::chrono::seconds(batchFrequency)); // Wait based on batch frequency
 
-            // Create a new batch of processes
-            std::string processName = "p" + std::to_string(processCount++);
-            auto newProcess = std::make_shared<Process>(processName, processCount);
+                // Create a new batch of processes
+                std::string processName = "p" + std::to_string(processCount++);
+                auto newProcess = std::make_shared<Process>(processName, processCount);
 
-            // Generate random number of instructions between min and max
-            int instructionCount = minInstructions + (std::rand() % (maxInstructions - minInstructions + 1));
-            newProcess->populatePrintCommands(instructionCount);
+                // Generate random number of instructions between min and max
+                int instructionCount = minInstructions + (std::rand() % (maxInstructions - minInstructions + 1));
+                newProcess->populatePrintCommands(instructionCount);
 
-            // Register the process with ConsoleManager without switching screens
-            BaseScreen newScreen(newProcess, processName);
-            ConsoleManager::getInstance()->registerScreen(std::make_shared<BaseScreen>(newScreen), false);
+                // Register the process with ConsoleManager without switching screens
+                BaseScreen newScreen(newProcess, processName);
+                ConsoleManager::getInstance()->registerScreen(std::make_shared<BaseScreen>(newScreen), false);
 
-            this->scheduleProcess(newProcess);
-            //std::cout << "Scheduler Queue Size After Adding: " << this->getQueueSize() << std::endl;
-            //std::cout << "Generated dummy process: " << processName << " with " << instructionCount << " instructions." << std::endl;
+                this->scheduleProcess(newProcess);
+                //std::cout << "Scheduler Queue Size After Adding: " << this->getQueueSize() << std::endl;
+                //std::cout << "Generated dummy process: " << processName << " with " << instructionCount << " instructions." << std::endl;
+            }
+            
         }
      }).detach(); // Detach the thread
 }
@@ -149,4 +159,14 @@ void GlobalScheduler::notifyWorkerFree() {
     if (!processQueue.empty()) {
         processAvailable.notify_one();  // Trigger dispatch if there are processes waiting
     }
+}
+
+int GlobalScheduler::getDelayCounter()
+{
+	return this->delayCounter;
+}
+
+void GlobalScheduler::setDelayCounter(int remainingDelay)
+{
+	this->delayCounter = remainingDelay;
 }

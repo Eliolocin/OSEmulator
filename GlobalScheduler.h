@@ -9,6 +9,7 @@
 #include <chrono>
 #include <atomic>
 #include <map>
+#include "Config.h"
 
 enum SchedulerType {
     FCFS,
@@ -26,6 +27,9 @@ public:
     void startTestMode(); // Starts generating dummy processes
     void stopTestMode(); // Stops generating dummy processes
     void notifyWorkerFree();
+
+    int getDelayCounter(); // Add function to get delay counter for debugging
+    void setDelayCounter(int remainingDelay); // Set the delay counter
     
 private:
     std::queue<std::shared_ptr<Process>> processQueue;  // Queue to hold processes
@@ -43,6 +47,8 @@ private:
     void dispatchRoundRobin(); // Round Robin scheduling method
     SchedulerType schedulerType; // New variable to store scheduler type
     int quantumCycles; // Quantum cycles for Round Robin
+
+	int delayCounter = getConfigBatchProcessFreq(); // Delay counter to simulate delay between commands
     
     //std::vector<std::atomic<bool>> cpuCores;
     //std::queue<std::shared_ptr<Process>> waitingQueue; // Queue for Round Robin processes

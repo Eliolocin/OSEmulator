@@ -3,7 +3,7 @@
 #include "PrintCommand.h"
 #include <filesystem>
 #include <iostream>
-
+#include "Config.h"
 #include <chrono>
 #include <ctime>
 #include <memory> 
@@ -57,6 +57,11 @@ int Process::getTotalCommandCounter() const
 	return this->commandList.size();
 }
 
+int Process::getDelayCounter() const
+{
+	return this->delayCounter;
+}
+
 
 bool Process::isFinished() const
 {
@@ -66,6 +71,12 @@ bool Process::isFinished() const
 void Process::addCommand(ICommand::CommandType commandType) // Add a command to the command list
 {
 	this->commandList.push_back(std::make_shared<ICommand>(pid, commandType));
+}
+
+void Process::setDelayCounter(int remainingDelay) // Set the delay counter
+{
+	//std::cout << "Setting delay counter to: " << remainingDelay << std::endl;
+	this->delayCounter = remainingDelay;
 }
 
 void Process::setCPUCoreID(int coreID) {
@@ -86,49 +97,81 @@ void Process::setState(ProcessState state) {
 	this->currentState = state;
 }
 
-void Process::executeCurrentCommand() const// Execute the current command in the command list
+void Process::executeCurrentCommand() // Remove const qualifier
 {
-	if (this->commandCounter >= this->commandList.size()) { // If the command counter is greater than the size of the command list, return
-		std::cout << "Command List of process \""+name+"\" is already finished!" << std::endl;
-		return;
-	};
-
-	if (this->commandList[this->commandCounter]->getCommandType() == ICommand::PRINT)
+	// Remove the const qualifier from this method to allow calling non-const member functions
+	/*
+	if (getDelayCounter() > 0) // If delay counter is greater than 0, decrement it and return
 	{
-		//this->commandList[this->commandCounter]->execPrint();
-		// Attempt to cast the ICommand pointer to a PrintCommand pointer
-		PrintCommand* printCommand = dynamic_cast<PrintCommand*>(this->commandList[this->commandCounter].get());
-		if (printCommand)
-		{
-			this->textBuffer += printCommand->execPrint(this->getCPUCoreID()); // Print and store in process' textBuffer
-		}
-
-
-		/* // Portion that prints out the process' text buffer to a file
-
-		if ((this->commandCounter+1) == this->commandList.size()) // If this command is the last command in the list, output the text buffer to a file
-		{
-			// Output text buffer as text file and clear it
-			String filePath = this->name + "_output.txt";
-			std::ofstream outFile(filePath);
-
-			if (outFile.is_open())
-			{
-				outFile << this->textBuffer;
-				outFile.close();
-			}
-			//std::cout << "Log File Output of \"" + name + "\" has been saved to: " << std::filesystem::absolute(filePath) << "!" << std::endl;
-
-		}*/
+		setDelayCounter(getDelayCounter()-1);
+		//std::cout << "Setting delay counter to: " << getDelayCounter() << std::endl;
 	}
-	else this->commandList[this->commandCounter]->execute();
+	else
+	*/
+	// {
+		// setDelayCounter(getConfigDelayPerExec()); // Reset delay counter
+		//std::cout << "RESET DELAY COUNTER TO: " << this->delayCounter << std::endl;
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(250));
+		if (this->commandCounter >= this->commandList.size()) { // If the command counter is greater than the size of the command list, return
+			std::cout << "Command List of process \"" + name + "\" is already finished!" << std::endl;
+			return;
+		};
+
+		if (this->commandList[this->commandCounter]->getCommandType() == ICommand::PRINT)
+		{
+			//this->commandList[this->commandCounter]->execPrint();
+			// Attempt to cast the ICommand pointer to a PrintCommand pointer
+			PrintCommand* printCommand = dynamic_cast<PrintCommand*>(this->commandList[this->commandCounter].get());
+			if (printCommand)
+			{
+				this->textBuffer += printCommand->execPrint(this->getCPUCoreID()); // Print and store in process' textBuffer
+			}
+
+			/* // Portion that prints out the process' text buffer to a file
+
+			if ((this->commandCounter + 1) == this->commandList.size()) // If this command is the last command in the list, output the text buffer to a file
+			{
+				// Output text buffer as text file and clear it
+				String filePath = this->name + "_output.txt";
+				std::ofstream outFile(filePath);
+
+				if (outFile.is_open())
+				{
+					outFile << this->textBuffer;
+					outFile.close();
+				}
+				//std::cout << "Log File Output of \"" + name + "\" has been saved to: " << std::filesystem::absolute(filePath) << "!" << std::endl;
+
+			}*/
+		}
+		else this->commandList[this->commandCounter]->execute();
+
+
+		// int delay;
+		// if (getConfigDelayPerExec() == 0) delay = 1*250;
+		// else delay = getConfigDelayPerExec()*250;
+
+		// std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+
+
+
+	// }
+	
+	
 }
 
 void Process::moveToNextLine() // Move to next command in the command list
 {
-	this->commandCounter++;
+	/*if (getDelayCounter() > 0) // If delay counter is greater than 0, decrement it and return
+	{
+		setDelayCounter(getDelayCounter() - 1);
+		//std::cout << "Setting delay counter to: " << getDelayCounter() << std::endl;
+	}*/
+	//else
+	//{
+		//setDelayCounter(getConfigDelayPerExec()*2); // Reset delay counter
+		this->commandCounter++;
+	//}
 }
 
 void Process::populatePrintCommands(int limit) // Limit determines number of print commands to put in process
