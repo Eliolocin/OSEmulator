@@ -42,7 +42,7 @@ void GlobalScheduler::start() {
 
 // Scheduler logic for dispatching processes to workers
 void GlobalScheduler::dispatchProcesses() {
-    int maxCores = getConfigNumCPU();  // Use the configured number of CPU cores
+    int maxCores = getConfigNumCPU();
 
     while (!stopRequested) {
         std::unique_lock<std::mutex> lock(queueMutex);
@@ -50,78 +50,33 @@ void GlobalScheduler::dispatchProcesses() {
 
         if (stopRequested) break;
 
+        //std::cout << "[GlobalScheduler] Dispatching processes. Queue size: " << processQueue.size() << std::endl;
+
         while (!processQueue.empty()) {
             int activeCores = std::count_if(workers.begin(), workers.end(), [](const auto& worker) {
                 return worker->isBusy();
-                });
+            });
 
             if (activeCores >= maxCores) {
-                std::this_thread::yield();  // Yield if all cores are busy
+                std::this_thread::yield();
                 break;
             }
-
             for (auto& worker : workers) {
+                //std::cout << "[GlobalScheduler] Checking worker " << worker->getWorkerId() << " status: " << (worker->isBusy() ? "busy" : "available") << std::endl;
                 if (!worker->isBusy() && !processQueue.empty()) {
                     auto process = processQueue.front();
-                    processQueue.pop();  // Remove from queue
-                    worker->assignProcess(process);
-                    worker->notify();  // Notify the worker to start processing
+                    processQueue.pop();
+                    
+                    //std::cout << "[GlobalScheduler] Assigning process " << process->getName() << " to worker " << worker->getWorkerId() << std::endl;
 
-                    // Limit dispatching to available cores
+                    worker->assignProcess(process);
+                    worker->notify();
                     if (++activeCores >= maxCores) break;
                 }
             }
-
             std::this_thread::yield();
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));  // Small delay to avoid tight looping
-    }
-}
-
-void GlobalScheduler::dispatchFCFS() {
-    // Standard FCFS scheduling: assign processes to available workers as they arrive
-    while (!processQueue.empty()) {
-        bool processAssigned = false;
-
-        for (auto& worker : workers) {
-            if (!worker->isBusy() && !processQueue.empty()) {
-                auto process = processQueue.front();
-                processQueue.pop();
-
-                worker->assignProcess(process);
-                worker->notify();  // Notify the worker thread to start processing
-                processAssigned = true;
-            }
-        }
-
-        if (!processAssigned) {
-            std::this_thread::yield();
-            break;
-        }
-    }
-}
-
-void GlobalScheduler::dispatchRoundRobin() {
-    while (!processQueue.empty()) {
-        bool processAssigned = false;
-
-        for (auto& worker : workers) {
-            if (!worker->isBusy() && !processQueue.empty()) {
-                auto process = processQueue.front();
-                processQueue.pop();
-
-                // Execute for a quantum of time (quantumCycles)
-                process->setRemainingQuantum(quantumCycles);
-                worker->assignProcess(process);
-                worker->notify();
-                processAssigned = true;
-            }
-        }
-
-        if (!processAssigned) {
-            std::this_thread::yield();
-            break;
-        }
+        //std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
 
@@ -149,14 +104,15 @@ void GlobalScheduler::startTestMode() {
     testModeActive = true;
 
     // Separate thread to generate dummy processes
-    testThread = std::thread([this]() {
+    //testThread = 
+    std::thread([this]() {
         int processCount = 0;
         int batchFrequency = getConfigBatchProcessFreq();
         int minInstructions = getConfigMinIns();
         int maxInstructions = getConfigMaxIns();
 
         while (testModeActive) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(batchFrequency * 100)); // Wait based on batch frequency
+            std::this_thread::sleep_for(std::chrono::seconds(batchFrequency)); // Wait based on batch frequency
 
             // Create a new batch of processes
             std::string processName = "p" + std::to_string(processCount++);
@@ -172,15 +128,25 @@ void GlobalScheduler::startTestMode() {
 
             this->scheduleProcess(newProcess);
             //std::cout << "Scheduler Queue Size After Adding: " << this->getQueueSize() << std::endl;
-            //std::cout << "Generated dummy process: " << processName << " with " << instructionCount << " instructions." << std::endl;
+            std::cout << "Generated dummy process: " << processName << " with " << instructionCount << " instructions." << std::endl;
         }
-     });
+     }).detach(); // Detach the thread
 }
 
 void GlobalScheduler::stopTestMode() {
-    testModeActive = false;
+    /*testModeActive = false;
     if (testThread.joinable()) {
         testThread.join(); // Wait for the test thread to finish
     }
+    std::cout << "Process generation stopped." << std::endl;*/
+    testModeActive = false;
     std::cout << "Process generation stopped." << std::endl;
+}
+
+// Notify that a worker has become free and ready for assignment
+void GlobalScheduler::notifyWorkerFree() {
+    std::unique_lock<std::mutex> lock(queueMutex);
+    if (!processQueue.empty()) {
+        processAvailable.notify_one();  // Trigger dispatch if there are processes waiting
+    }
 }

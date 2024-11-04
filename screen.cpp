@@ -67,7 +67,7 @@ String ScreenLS(bool printToConsole)
 		String currentLine = std::to_string(attachedProcess->getCommandCounter());
 		String totalLines = std::to_string(attachedProcess->getTotalCommandCounter());
 
-		if (attachedProcess->isFinished())
+		if (attachedProcess->getState() == Process::FINISHED)//attachedProcess->isFinished()
 		{
 			lsString = attachedProcess->getName() + "\t(" + convertTime(attachedProcess->getTimeFinished()) + ")\t Core: " + cpuCore + "\t" + currentLine + " / " + totalLines;
 			finishedProcessList.push_back(lsString);
@@ -77,7 +77,7 @@ String ScreenLS(bool printToConsole)
 			// If attached process has no Time Started yet
 			//if (attachedProcess->getTimeStarted() == 0)
 				//lsString = attachedProcess->getName() + "\t" + "Not Yet Started" + "\t\t\t Core: -1" + "\t" + currentLine + " / " + totalLines;
-			if (attachedProcess->getTimeStarted() != 0)
+			if (attachedProcess->getState() == Process::RUNNING)//attachedProcess->getTimeStarted() != 0
 			{ // Process is running
 				lsString = attachedProcess->getName() + "\t(" + convertTime(attachedProcess->getTimeStarted()) + ")\t Core: " + cpuCore + "\t" + currentLine + " / " + totalLines;
 				runningProcessList.push_back(lsString);

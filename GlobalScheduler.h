@@ -8,6 +8,7 @@
 #include <memory>
 #include <chrono>
 #include <atomic>
+#include <map>
 
 enum SchedulerType {
     FCFS,
@@ -24,7 +25,8 @@ public:
     int getQueueSize(); // Add function to get queue size for debugging
     void startTestMode(); // Starts generating dummy processes
     void stopTestMode(); // Stops generating dummy processes
-
+    void notifyWorkerFree();
+    
 private:
     std::queue<std::shared_ptr<Process>> processQueue;  // Queue to hold processes
     std::vector<std::shared_ptr<SchedulerWorker>> workers;  // List of CPU workers
@@ -37,8 +39,13 @@ private:
     std::atomic<bool> testModeActive{ false }; // Flag to control scheduler-test
     std::thread testThread; // Thread for scheduler-test to generate processes
 
-    void dispatchFCFS(); // FCFS scheduling method
+    //void dispatchFCFS(); // FCFS scheduling method
     void dispatchRoundRobin(); // Round Robin scheduling method
     SchedulerType schedulerType; // New variable to store scheduler type
     int quantumCycles; // Quantum cycles for Round Robin
+    
+    //std::vector<std::atomic<bool>> cpuCores;
+    //std::queue<std::shared_ptr<Process>> waitingQueue; // Queue for Round Robin processes
+    //bool stopRequested = false;                    // To signal the scheduler to stop
+    //std::map<int, std::thread> runningProcesses;  // Maps process IDs to threads
 };
