@@ -10,7 +10,7 @@
 #include <thread>
 
 
-Process::Process(String name, int pid) : name(name), pid(pid) {}
+Process::Process(String name, int pid, size_t memoryRequired) : name(name), pid(pid), memoryRequired(memoryRequired) {}
 
 String Process::getName() const
 {
@@ -62,6 +62,11 @@ int Process::getDelayCounter() const
 	return this->delayCounter;
 }
 
+size_t Process::getMemoryRequired() const
+{
+	return this->memoryRequired;
+}
+
 
 bool Process::isFinished() const
 {
@@ -95,6 +100,10 @@ void Process::setTimeFinished() {
 
 void Process::setState(ProcessState state) {
 	this->currentState = state;
+}
+
+void Process::setMemoryRequired(size_t memory) {
+	this->memoryRequired = memory;
 }
 
 void Process::executeCurrentCommand() // Remove const qualifier

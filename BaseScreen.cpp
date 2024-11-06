@@ -65,8 +65,9 @@ void BaseScreen::printProcessInfo() const
     std::cout << "Process ID: " << attachedProcess->getPid() << std::endl << std::endl;
 
     std::cout << "Current Line of Instruction: " << attachedProcess->getCommandCounter() << std::endl;
-    std::cout << "Total Lines of Instruction: " << attachedProcess->getTotalCommandCounter() << std::endl << std::endl;
+    std::cout << "Total Lines of Instruction: " << attachedProcess->getTotalCommandCounter() << std::endl;
 
+    std::cout << "Memory Size: " << attachedProcess->getMemoryRequired()<< std::endl << std::endl;
     // Get the raw time values
     time_t timeStarted = attachedProcess->getTimeStarted();
     time_t timeFinished = attachedProcess->getTimeFinished();

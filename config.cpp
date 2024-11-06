@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 // Static (file-local) variables, only modifiable within this file
+// Default values are set here
 static int NUM_CPU = 4;
 static std::string SCHEDULER = "rr";
 static int QUANTUM_CYCLES = 5;
@@ -12,6 +13,14 @@ static int BATCH_PROCESS_FREQ = 1;
 static int MIN_INS = 1000;
 static int MAX_INS = 2000;
 static int DELAY_PER_EXEC = 0;
+static size_t MAX_OVERALL_MEMORY = 16384;
+static size_t MEM_PER_FRAME = 16;
+static size_t MIN_MEM_PER_PROCESS = 1024;
+static size_t MAX_MEM_PER_PROCESS = 4096;
+
+// How many actual 'ticks' it takes for one CPU cycle in the OS to pass
+// Made to help prevent bugs from CPU running to fast
+const int CYCLE_SPEED = 5000; 
 
 // Initialization status is False on OS launch
 static bool INIT_STATUS = false;
@@ -26,11 +35,11 @@ std::string getConfigScheduler() {
 }
 
 int getConfigQuantumCycles() {
-    return QUANTUM_CYCLES;
+    return QUANTUM_CYCLES*CYCLE_SPEED;
 }
 
 int getConfigBatchProcessFreq() {
-    return BATCH_PROCESS_FREQ;
+    return (BATCH_PROCESS_FREQ+1) * CYCLE_SPEED;
 }
 
 int getConfigMinIns() {
@@ -42,7 +51,23 @@ int getConfigMaxIns() {
 }
 
 int getConfigDelayPerExec() {
-    return DELAY_PER_EXEC;
+    return DELAY_PER_EXEC * CYCLE_SPEED;
+}
+
+size_t getConfigMaxOverallMemory() {
+	return MAX_OVERALL_MEMORY;
+}
+
+size_t getConfigMemPerFrame() {
+	return MEM_PER_FRAME;
+}
+
+size_t getConfigMinMemPerProcess() {
+	return MIN_MEM_PER_PROCESS;
+}
+
+size_t getConfigMaxMemPerProcess() {
+	return MAX_MEM_PER_PROCESS;
 }
 
 bool isInitialized()
@@ -98,6 +123,23 @@ void loadConfig(const std::string& filename) {
         MAX_INS = std::stoi(configValues["max-ins"]);
     }
     if (configValues.find("delay-per-exec") != configValues.end()) {
-        DELAY_PER_EXEC = std::stoi(configValues["delay-per-exec"]);
+        if (std::stoi(configValues["delay-per-exec"]) == 0) {
+            DELAY_PER_EXEC = 1;
+        } else {
+            DELAY_PER_EXEC = std::stoi(configValues["delay-per-exec"]);
+        }
     }
+	if (configValues.find("max-overall-mem") != configValues.end()) {
+		MAX_OVERALL_MEMORY = std::stoi(configValues["max-overall-mem"]);
+	}
+	if (configValues.find("mem-per-frame") != configValues.end()) {
+		MEM_PER_FRAME = std::stoi(configValues["mem-per-frame"]);
+	}
+    if (configValues.find("min-mem-per-proc") != configValues.end()) {
+        MIN_MEM_PER_PROCESS = std::stoi(configValues["min-mem-per-proc"]);
+	}
+	if (configValues.find("max-mem-per-proc") != configValues.end()) {
+		MAX_MEM_PER_PROCESS = std::stoi(configValues["max-mem-per-proc"]);
+	}
+	file.close();
 }

@@ -146,6 +146,7 @@
     <ClCompile Include="PrintCommand.cpp" />
     <ClCompile Include="process-smi.cpp" />
     <ClCompile Include="Process.cpp" />
+    <ClCompile Include="randomizer.cpp" />
     <ClCompile Include="report-util.cpp" />
     <ClCompile Include="scheduler-stop.cpp" />
     <ClCompile Include="scheduler-test.cpp" />

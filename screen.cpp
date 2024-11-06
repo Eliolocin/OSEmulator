@@ -35,14 +35,21 @@ void ScreenS(String processName, GlobalScheduler* scheduler)
 	//Process newProcess = Process(processName, consolesPresent); // PID Naming Convention: Number of Consoles/Processes present+1
 	//newProcess.populatePrintCommands(100); // Add dummy Print commands
 	//BaseScreen newScreen = BaseScreen(std::make_shared<Process>(newProcess), processName);
-	auto newProcess = std::make_shared<Process>(processName, consolesPresent); // PID Naming Convention: Number of Consoles/Processes present + 1
-	newProcess->populatePrintCommands(100); // Add dummy Print commands
+	int minInstructions = getConfigMinIns();
+	int maxInstructions = getConfigMaxIns();
+	size_t minMemPerProcess = getConfigMinMemPerProcess();
+	size_t maxMemPerProcess = getConfigMaxMemPerProcess();
+
+	size_t processMemReq = randomMemSize(minMemPerProcess, maxMemPerProcess);
+	auto newProcess = std::make_shared<Process>(processName, consolesPresent, processMemReq); // PID Naming Convention: Number of Consoles/Processes present + 1
+
+	int instructionCount = randomNumber(minInstructions, maxInstructions);
+	newProcess->populatePrintCommands(instructionCount); // Add random number of dummy Print commands
 	BaseScreen newScreen(newProcess, processName);
 
 	ConsoleManager::getInstance()->registerScreen(std::make_shared<BaseScreen>(newScreen));
 	//ConsoleManager::getInstance()->switchConsole(processName);
 	scheduler->scheduleProcess(newProcess);
-	std::cout << "Process \"" << processName << "\" created, registered with ConsoleManager, and added to scheduler queue." << std::endl;
 
 	// Confirm process is added to scheduler's queue
 	//std::cout << "Scheduler Queue Size After Adding: " << scheduler->getQueueSize() << std::endl;
@@ -72,16 +79,16 @@ String ScreenLS(bool printToConsole)
 			lsString = attachedProcess->getName() + "\t(" + convertTime(attachedProcess->getTimeFinished()) + ")\t Core: " + cpuCore + "\t" + currentLine + " / " + totalLines;
 			finishedProcessList.push_back(lsString);
 		}
-		else
-		{
+		else if (attachedProcess->getState() == Process::RUNNING)
+		{ 
 			// If attached process has no Time Started yet
 			//if (attachedProcess->getTimeStarted() == 0)
 				//lsString = attachedProcess->getName() + "\t" + "Not Yet Started" + "\t\t\t Core: -1" + "\t" + currentLine + " / " + totalLines;
-			if (attachedProcess->getState() == Process::RUNNING)//attachedProcess->getTimeStarted() != 0
-			{ // Process is running
+			 //attachedProcess->getTimeStarted() != 0
+			 // Process is running
 				lsString = attachedProcess->getName() + "\t(" + convertTime(attachedProcess->getTimeStarted()) + ")\t Core: " + cpuCore + "\t" + currentLine + " / " + totalLines;
 				runningProcessList.push_back(lsString);
-			}
+			
 				
 		}
 		
@@ -89,12 +96,11 @@ String ScreenLS(bool printToConsole)
 		// Example: screen->onEnabled();
 	}
 
-	int utilizedCPUs = runningProcessList.size();
+	int utilizedCPUs = std::min(static_cast<int>(runningProcessList.size()), getConfigNumCPU());
 	int availableCPUS = getConfigNumCPU() - utilizedCPUs;// Total CPUs - utilizedCPUs
 	int cpuUtil = utilizedCPUs * 100 / getConfigNumCPU();// Calculated by getting Cores Used * 100 / Total Cores
 
 	std::ostringstream reportText; // Store everything printed into a single ostringstream
-
 	reportText << "CPU Utilization: " << cpuUtil << "%" << std::endl;
 	reportText << "Cores Utilized: " << utilizedCPUs << std::endl;
 	reportText << "Cores Available: " << availableCPUS << std::endl << std::endl;
@@ -105,7 +111,7 @@ String ScreenLS(bool printToConsole)
 	if (runningProcessList.size() == 0)
 		reportText << "N/A" << std::endl;
 	else
-		for (size_t i = 0; i < runningProcessList.size(); i++)
+		for (size_t i = 0; i < utilizedCPUs; i++)
 		{
 			reportText << runningProcessList[i] << std::endl;
 		}

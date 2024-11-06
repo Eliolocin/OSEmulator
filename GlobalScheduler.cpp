@@ -7,6 +7,7 @@
 #include <chrono>
 #include <queue>
 #include "ConsoleManager.h"
+#include "Utilities.h"
 
 // Constructor initializes the number of workers (cores)
 GlobalScheduler::GlobalScheduler(int numWorkers) 
@@ -52,7 +53,7 @@ void GlobalScheduler::dispatchProcesses() {
 
         //std::cout << "[GlobalScheduler] Dispatching processes. Queue size: " << processQueue.size() << std::endl;
 
-        while (!processQueue.empty()) {
+        while (!processQueue.empty()) {         
             int activeCores = std::count_if(workers.begin(), workers.end(), [](const auto& worker) {
                 return worker->isBusy();
             });
@@ -110,9 +111,11 @@ void GlobalScheduler::startTestMode() {
         int batchFrequency = getConfigBatchProcessFreq();
         int minInstructions = getConfigMinIns();
         int maxInstructions = getConfigMaxIns();
+        size_t minMemPerProcess = getConfigMinMemPerProcess();
+		size_t maxMemPerProcess = getConfigMaxMemPerProcess();
 
         while (testModeActive) {
-            if(getDelayCounter() > 0)
+            if((getDelayCounter()-1) > 0)
             {
 				setDelayCounter(getDelayCounter()-1);
 			} // Do not create new process if delay counter is greater than 0
@@ -124,10 +127,11 @@ void GlobalScheduler::startTestMode() {
 
                 // Create a new batch of processes
                 std::string processName = "p" + std::to_string(processCount++);
-                auto newProcess = std::make_shared<Process>(processName, processCount);
+                size_t processMemReq = randomMemSize(minMemPerProcess, maxMemPerProcess);
+            	auto newProcess = std::make_shared<Process>(processName, processCount, processMemReq);
 
                 // Generate random number of instructions between min and max
-                int instructionCount = minInstructions + (std::rand() % (maxInstructions - minInstructions + 1));
+                int instructionCount = randomNumber(minInstructions, maxInstructions);
                 newProcess->populatePrintCommands(instructionCount);
 
                 // Register the process with ConsoleManager without switching screens

@@ -12,10 +12,17 @@
 #include "GlobalScheduler.h"
 
 void generateHundredPrints(int numOfProcesses, GlobalScheduler& scheduler) {
+    int minInstructions = getConfigMinIns();
+    int maxInstructions = getConfigMaxIns();
+    size_t minMemPerProcess = getConfigMinMemPerProcess();
+    size_t maxMemPerProcess = getConfigMaxMemPerProcess();
+
     for (int i = 0; i < numOfProcesses; i++) {
         String processName = "process_" + std::to_string(i);
-        auto newProcess = std::make_shared<Process>(processName, i);  // Create new process
-        newProcess->populatePrintCommands(100);  // Add dummy Print commands
+        size_t processMemReq = randomMemSize(minMemPerProcess, maxMemPerProcess);
+        auto newProcess = std::make_shared<Process>(processName, i, processMemReq);  // Create new process
+
+    	newProcess->populatePrintCommands(100);  // Add dummy Print commands
 
         BaseScreen newScreen(newProcess, processName);
         ConsoleManager::getInstance()->registerScreen(std::make_shared<BaseScreen>(newScreen));

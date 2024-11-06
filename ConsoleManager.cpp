@@ -103,9 +103,10 @@ std::vector<std::shared_ptr<BaseScreen>> ConsoleManager::getAllProcessScreens() 
     }
     
     // Sort the screens in alphabetical order based on their names
+	/*
     std::sort(screens.begin(), screens.end(), [](const auto& screen1, const auto& screen2) {
         return screen1->getName() < screen2->getName();
-    });
+    });*/
     
     return screens;
 }
@@ -138,6 +139,7 @@ void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef, bool 
 		//this->switchConsole(screenRef->getName());
 		if (switchToScreen) {
 			this->switchConsole(screenRef->getName());
+			std::cout << "Process \"" << screenRef->getName() << "\" created, registered with ConsoleManager, and added to scheduler queue." << std::endl;
 		}
 	}
 }

@@ -9,9 +9,7 @@ public:
 	struct RequirementFlags
 	{
 		bool requireFiles;
-		int numFiles;
 		bool requireMemory;
-		int memoryRequired;
 	};
 
 	enum ProcessState // Enum representing the state of the process
@@ -22,7 +20,7 @@ public:
 		FINISHED
 	};
 
-	Process(String name, int pid); // Constructor of Process
+	Process(String name, int pid, size_t memoryRequired); // Constructor of Process
 	void addCommand(ICommand::CommandType commandType); // Add a command to the process
 	void executeCurrentCommand(); // Execute the current command of the process
 	void moveToNextLine(); // Move to next line of command
@@ -50,14 +48,19 @@ public:
 	void setTimeFinished();  // Set the finish time
 	void setState(ProcessState state);  // Set the process state
 
+	// Memory related methods
+	size_t getMemoryRequired() const; // Get the memory required for the process
+	void setMemoryRequired(size_t memory); // Set the memory required for the process
+
 	// Round Robin related methods
 	int getRemainingQuantum() const { return remainingQuantum; } // Get the remaining quantum for Round Robin
 	void setRemainingQuantum(int quantum); // Set the remaining quantum for Round Robin
-	void decrementQuantum() { if (remainingQuantum > 0) remainingQuantum--; } // Decrement the remaining quantum by 1
+	void decrementQuantum() { remainingQuantum--; } // Decrement the remaining quantum by 1
 	void resetQuantum(int quantumCycles) { remainingQuantum = quantumCycles; }
 private:
 	String name; // Name of the process
 	int pid; // Process ID
+	size_t memoryRequired; // Memory required to run the process
 
 	int delayCounter = getConfigDelayPerExec(); // Delay counter to simulate delay between commands
 
@@ -73,7 +76,7 @@ private:
 	mutable String textBuffer = "Process name: " + name + "\nLogs:\n\n"; // Buffer to store the logs of the process
 	// Mutable to bypass const restraint of functions that are not supposed to modify the object
 
-	RequirementFlags requirementFlags = { false, 0, false, 0 };  // Default values
+	RequirementFlags requirementFlags = { false, false };  // Default values
 	ProcessState currentState = ProcessState::READY;  // Start in READY state
 
 

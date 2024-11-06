@@ -119,28 +119,24 @@ void SchedulerWorker::processExecution() {
                 // Process is finished
                 assignedProcess->setTimeFinished();
                 assignedProcess->setState(Process::FINISHED);
+                assignedProcess = nullptr;
+                busy = false;
+                cv.notify_all();
 
             }
             else if (schedulerType == "rr") {
                 // Reset the process quantum for Round Robin
                 int quantumCycles = getConfigQuantumCycles();  // Fetch quantum from config
                 assignedProcess->resetQuantum(quantumCycles);
+				assignedProcess->setDelayCounter(getConfigDelayPerExec()); // Reset delay counter
 
                 while (assignedProcess->getCommandCounter() < assignedProcess->getTotalCommandCounter()) {
-                    // Execute one command and decrement quantum
-                    if (assignedProcess->getDelayCounter() > 0) {
-                        assignedProcess->setDelayCounter(assignedProcess->getDelayCounter() - 1);
-                        continue; // Skip iteration if delay is not 0
-                    }
-                    // Reset delay counter and execute command if delay is 0
-                    assignedProcess->setDelayCounter(getConfigDelayPerExec());
+                    //std::cout << assignedProcess->getRemainingQuantum() << " Remaining Quantum " << std::endl;
 
-                    assignedProcess->executeCurrentCommand();
-                    assignedProcess->moveToNextLine();
-                    assignedProcess->decrementQuantum();
-
+                    // 0 0
                     // If quantum expires, pause execution and requeue
-                    if (assignedProcess->getRemainingQuantum() <= 0) {
+                    if (assignedProcess&&(assignedProcess->getRemainingQuantum()-1)<= -1) {
+						//std::cout << "[Worker " << workerId << "] Quantum expired for process " << assignedProcess->getName() << ". Re-queuing." << std::endl;
                         assignedProcess->setState(Process::READY);  // Set back to READY
                         ConsoleManager::getInstance()->getGlobalScheduler()->scheduleProcess(assignedProcess);  // Re-queue
                         assignedProcess = nullptr;
@@ -148,6 +144,22 @@ void SchedulerWorker::processExecution() {
                         cv.notify_all();
                         break;
                     }
+
+                    // Execute one command and decrement quantum
+                    if ((assignedProcess->getDelayCounter()-1) > 0) {
+                        assignedProcess->decrementQuantum();
+                        // -1 0
+                        assignedProcess->setDelayCounter(assignedProcess->getDelayCounter() - 1);
+                        // 0 0
+                        continue; // Skip iteration if delay is not 0
+                    }
+                    // Reset delay counter and execute command if delay is 0
+                    assignedProcess->decrementQuantum();
+                    assignedProcess->setDelayCounter(getConfigDelayPerExec());
+
+                    assignedProcess->executeCurrentCommand();
+                    assignedProcess->moveToNextLine();
+                    
                 }
 
                 // If process finished all commands, mark it as finished
@@ -156,16 +168,16 @@ void SchedulerWorker::processExecution() {
                     assignedProcess->setState(Process::FINISHED);
                     assignedProcess = nullptr;
                     busy = false;
-                    //cv.notify_all();
+                    cv.notify_all();
                     //ConsoleManager::getInstance()->getGlobalScheduler()->notifyWorkerFree();
                 }
             }
 
             // Clear the current process and set worker to not busy
-            assignedProcess = nullptr;
-            busy = false;
+            //assignedProcess = nullptr;
+            //busy = false;
             //busy.store(false);
-            cv.notify_all();
+            //cv.notify_all();
             // Notify scheduler that the worker is free to take a new process
             //ConsoleManager::getInstance()->getGlobalScheduler()->notifyWorkerFree();
             //std::cout << "[Worker " << workerId << "] Available for new process. Notifying scheduler." << std::endl;

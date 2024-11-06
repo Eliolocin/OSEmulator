@@ -12,6 +12,10 @@ int getConfigBatchProcessFreq();
 int getConfigMinIns();
 int getConfigMaxIns();
 int getConfigDelayPerExec();
+size_t getConfigMaxOverallMemory();
+size_t getConfigMemPerFrame();
+size_t getConfigMinMemPerProcess();
+size_t getConfigMaxMemPerProcess();
 
 bool isInitialized();
 void setInitialized();
