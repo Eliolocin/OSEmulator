@@ -4,6 +4,7 @@
 #include "GlobalScheduler.h"
 #include "Utilities.h"
 #include "Config.h"
+#include "FlatMemoryAllocator.h"
 
 int main() // Main entry point of OS
 {
@@ -13,10 +14,13 @@ int main() // Main entry point of OS
     bool running = true; // Program keeps running while True
     loadConfig(configFile);
 
+    // Initialize memory allocator with the maximum memory size from the config
+    size_t maxMemorySize = getConfigMaxOverallMemory();
+    FlatMemoryAllocator memoryAllocator(maxMemorySize);
+
     ConsoleManager::initialize(); // Initialize ConsoleManager Singleton
-    GlobalScheduler scheduler(getConfigNumCPU()); // Create GlobalScheduler with number of CPU cores
-    //loadConfig(configFile); // Load configuration file
-	//GlobalScheduler scheduler(getConfigNumCPU()); // Create GlobalScheduler with number of CPU cores
+    GlobalScheduler scheduler(getConfigNumCPU(), &memoryAllocator); // Create GlobalScheduler with number of CPU cores
+    
     //Pass scheduler to ConsoleManager for access within commands
     ConsoleManager::getInstance()->setGlobalScheduler(&scheduler);
 

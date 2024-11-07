@@ -6,11 +6,11 @@
 
 #include <thread>
 #include <memory>
-
+#include "IMemoryAllocator.h"
 
 class SchedulerWorker {
 public:
-    SchedulerWorker(int id);  // Constructor takes the CPU Core ID
+    SchedulerWorker(int id, IMemoryAllocator* memoryAllocator);  // Constructor takes the CPU Core ID
     void assignProcess(std::shared_ptr<Process> process);  // Assign a process to this worker
     void start();  // Start the worker thread
     void stop();  // Stop the worker
@@ -30,4 +30,6 @@ private:
     int workerId;  // Core ID for this worker
     std::mutex mtx;
     std::condition_variable cv;
+
+    IMemoryAllocator* memoryAllocator;  // Store the memory allocator reference
 };

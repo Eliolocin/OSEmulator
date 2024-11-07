@@ -10,6 +10,7 @@
 #include <atomic>
 #include <map>
 #include "Config.h"
+#include "IMemoryAllocator.h"
 
 enum SchedulerType {
     FCFS,
@@ -18,7 +19,7 @@ enum SchedulerType {
 
 class GlobalScheduler : public AbsScheduler {
 public:
-    GlobalScheduler(int numWorkers);  // Initialize scheduler with number of cores
+    GlobalScheduler(int numWorkers, IMemoryAllocator* memoryAllocator);  // Initialize scheduler with number of cores
     void scheduleProcess(std::shared_ptr<Process> process) override;  // FCFS algorithm implementation
     void start() override;  // Start the scheduler
     void stop() override;  // Stop the scheduler
@@ -30,6 +31,10 @@ public:
 
     int getDelayCounter(); // Add function to get delay counter for debugging
     void setDelayCounter(int remainingDelay); // Set the delay counter
+
+    IMemoryAllocator* getMemoryAllocator() const {
+        return memoryAllocator;
+    }
     
 private:
     std::queue<std::shared_ptr<Process>> processQueue;  // Queue to hold processes
@@ -43,15 +48,10 @@ private:
     std::atomic<bool> testModeActive{ false }; // Flag to control scheduler-test
     std::thread testThread; // Thread for scheduler-test to generate processes
 
-    //void dispatchFCFS(); // FCFS scheduling method
-    void dispatchRoundRobin(); // Round Robin scheduling method
     SchedulerType schedulerType; // New variable to store scheduler type
     int quantumCycles; // Quantum cycles for Round Robin
 
 	int delayCounter = getConfigBatchProcessFreq(); // Delay counter to simulate delay between commands
-    
-    //std::vector<std::atomic<bool>> cpuCores;
-    //std::queue<std::shared_ptr<Process>> waitingQueue; // Queue for Round Robin processes
-    //bool stopRequested = false;                    // To signal the scheduler to stop
-    //std::map<int, std::thread> runningProcesses;  // Maps process IDs to threads
+
+    IMemoryAllocator* memoryAllocator;  // Memory allocator pointer
 };

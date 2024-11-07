@@ -10,12 +10,12 @@
 #include "Utilities.h"
 
 // Constructor initializes the number of workers (cores)
-GlobalScheduler::GlobalScheduler(int numWorkers) 
-    : schedulerType(getConfigScheduler() == "rr" ? ROUND_ROBIN : FCFS),
+GlobalScheduler::GlobalScheduler(int numWorkers, IMemoryAllocator* memoryAllocator)
+    : memoryAllocator(memoryAllocator), schedulerType(getConfigScheduler() == "rr" ? ROUND_ROBIN : FCFS),
     quantumCycles(getConfigQuantumCycles()) {
     for (int i = 0; i < numWorkers; ++i) {
         //std::cout << "CPU \"" << i << "\" added!" << std::endl;
-        workers.push_back(std::make_shared<SchedulerWorker>(i));  // Create workers (CPU cores)
+        workers.push_back(std::make_shared<SchedulerWorker>(i, memoryAllocator));  // Create workers (CPU cores)
     }
 }
 
@@ -72,6 +72,7 @@ void GlobalScheduler::dispatchProcesses() {
 
                     worker->assignProcess(process);
                     worker->notify();
+
                     if (++activeCores >= maxCores) break;
                 }
             }
@@ -128,7 +129,7 @@ void GlobalScheduler::startTestMode() {
                 // Create a new batch of processes
                 std::string processName = "p" + std::to_string(processCount++);
                 size_t processMemReq = randomMemSize(minMemPerProcess, maxMemPerProcess);
-            	auto newProcess = std::make_shared<Process>(processName, processCount, processMemReq);
+            	auto newProcess = std::make_shared<Process>(processName, processCount, maxMemPerProcess);//set to maxMem for fixed, change to processMemReq 
 
                 // Generate random number of instructions between min and max
                 int instructionCount = randomNumber(minInstructions, maxInstructions);

@@ -16,7 +16,7 @@
 #include "Config.h"
 
 
-SchedulerWorker::SchedulerWorker(int id) : workerId(id), running(false), busy(false) {}
+SchedulerWorker::SchedulerWorker(int id, IMemoryAllocator* memoryAllocator) : workerId(id), running(false), busy(false), memoryAllocator(memoryAllocator) {}
 
 void SchedulerWorker::assignProcess(std::shared_ptr<Process> process) {
     std::lock_guard<std::mutex> lock(mtx);
@@ -46,46 +46,6 @@ void SchedulerWorker::notify() {
 
 
 void SchedulerWorker::processExecution() {
-    /*while (running) {
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [this] { return assignedProcess || !running; });
-
-        if (assignedProcess) {
-            assignedProcess->setCPUCoreID(workerId);
-            assignedProcess->setTimeStarted();
-            assignedProcess->setState(Process::RUNNING);
-
-            // Reset the process quantum for Round Robin
-            int quantumCycles = getConfigQuantumCycles();  // Fetch quantum from config
-            assignedProcess->resetQuantum(quantumCycles);
-
-            while (assignedProcess->getCommandCounter() < assignedProcess->getTotalCommandCounter()) {
-                // Execute one command and decrement quantum
-                assignedProcess->executeCurrentCommand();
-                assignedProcess->moveToNextLine();
-                assignedProcess->decrementQuantum();
-
-                // If quantum expires, pause execution and requeue
-                if (assignedProcess->getRemainingQuantum() <= 0) {
-                    assignedProcess->setState(Process::READY);  // Set back to READY
-                    ConsoleManager::getInstance()->getGlobalScheduler()->scheduleProcess(assignedProcess);  // Re-queue
-                    assignedProcess = nullptr;
-                    busy = false;
-                    cv.notify_all();
-                    break;
-                }
-            }
-
-            // If process finished all commands, mark it as finished
-            if (assignedProcess && assignedProcess->isFinished()) {
-                assignedProcess->setTimeFinished();
-                assignedProcess->setState(Process::FINISHED);
-                assignedProcess = nullptr;
-                busy = false;
-                cv.notify_all();
-            }
-        }
-    }*/
     while (running) {
         std::unique_lock<std::mutex> lock(mtx);
         cv.wait(lock, [this] { return assignedProcess || !running; });
@@ -93,6 +53,22 @@ void SchedulerWorker::processExecution() {
         if (!running) break;
 
         if (assignedProcess) {
+
+            // Only allocate memory if it hasn't been allocated yet
+            if (!assignedProcess->isMemoryAllocated()) {
+                void* memory = memoryAllocator->allocate(assignedProcess->getMemoryRequired());
+                if (memory == nullptr) {
+                    //std::cout << "Failed to allocate memory for process " << assignedProcess->getName() << "\n";
+                    assignedProcess->setState(Process::READY);
+                    ConsoleManager::getInstance()->getGlobalScheduler()->scheduleProcess(assignedProcess);
+                    assignedProcess = nullptr;
+                    busy = false;
+                    continue;  // Skip this iteration and let the process wait for memory availability
+                }
+                assignedProcess->setAllocatedMemory(memory);
+                assignedProcess->setMemoryAllocated(true);
+            }
+            
             //std::cout << "[Worker " << workerId << "] Starting process " << assignedProcess->getName() << std::endl;
             assignedProcess->setCPUCoreID(workerId);
             assignedProcess->setTimeStarted();
@@ -137,7 +113,7 @@ void SchedulerWorker::processExecution() {
                     // If quantum expires, pause execution and requeue
                     if (assignedProcess&&(assignedProcess->getRemainingQuantum()-1)<= -1) {
 						//std::cout << "[Worker " << workerId << "] Quantum expired for process " << assignedProcess->getName() << ". Re-queuing." << std::endl;
-                        assignedProcess->setState(Process::READY);  // Set back to READY
+                        //assignedProcess->setState(Process::READY);  // Set back to READY
                         ConsoleManager::getInstance()->getGlobalScheduler()->scheduleProcess(assignedProcess);  // Re-queue
                         assignedProcess = nullptr;
                         busy = false;
@@ -166,20 +142,19 @@ void SchedulerWorker::processExecution() {
                 if (assignedProcess && assignedProcess->isFinished()) {
                     assignedProcess->setTimeFinished();
                     assignedProcess->setState(Process::FINISHED);
+                    // Deallocate memory only when process is finished
+                    if (assignedProcess->getAllocatedMemory()) {
+                        memoryAllocator->deallocate(assignedProcess->getAllocatedMemory());
+                        assignedProcess->setAllocatedMemory(nullptr);
+                        assignedProcess->setMemoryAllocated(false);
+                    }
+
                     assignedProcess = nullptr;
                     busy = false;
                     cv.notify_all();
-                    //ConsoleManager::getInstance()->getGlobalScheduler()->notifyWorkerFree();
                 }
             }
 
-            // Clear the current process and set worker to not busy
-            //assignedProcess = nullptr;
-            //busy = false;
-            //busy.store(false);
-            //cv.notify_all();
-            // Notify scheduler that the worker is free to take a new process
-            //ConsoleManager::getInstance()->getGlobalScheduler()->notifyWorkerFree();
             //std::cout << "[Worker " << workerId << "] Available for new process. Notifying scheduler." << std::endl;
         }
     }

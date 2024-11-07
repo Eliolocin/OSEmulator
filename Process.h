@@ -57,6 +57,14 @@ public:
 	void setRemainingQuantum(int quantum); // Set the remaining quantum for Round Robin
 	void decrementQuantum() { remainingQuantum--; } // Decrement the remaining quantum by 1
 	void resetQuantum(int quantumCycles) { remainingQuantum = quantumCycles; }
+
+	//memory
+	bool isMemoryAllocated() const { return memoryAllocated; }
+	void setMemoryAllocated(bool allocated) { memoryAllocated = allocated; }
+
+	void* getAllocatedMemory() const { return allocatedMemory; }
+	void setAllocatedMemory(void* memory) { allocatedMemory = memory; }
+
 private:
 	String name; // Name of the process
 	int pid; // Process ID
@@ -86,5 +94,9 @@ private:
 	time_t timeFinished = 0; // Time the process finished (to be adjusted by Scheduler)
 
 	int remainingQuantum = 0; // Quantum time left for Round Robin scheduling
+
+	//memory
+	bool memoryAllocated = false;  // Track if memory has already been allocated
+	void* allocatedMemory = nullptr;  // Pointer to the allocated memory
 };
 
