@@ -129,7 +129,7 @@ void GlobalScheduler::startTestMode() {
                 // Create a new batch of processes
                 std::string processName = "p" + std::to_string(processCount++);
                 size_t processMemReq = randomMemSize(minMemPerProcess, maxMemPerProcess);
-            	auto newProcess = std::make_shared<Process>(processName, processCount, maxMemPerProcess);//set to maxMem for fixed, change to processMemReq 
+            	auto newProcess = std::make_shared<Process>(processName, processCount, processMemReq);//set to maxMem for fixed, change to processMemReq 
 
                 // Generate random number of instructions between min and max
                 int instructionCount = randomNumber(minInstructions, maxInstructions);

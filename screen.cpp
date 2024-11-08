@@ -42,7 +42,7 @@ void ScreenS(String processName, GlobalScheduler* scheduler)
 
 	size_t processMemReq = randomMemSize(minMemPerProcess, maxMemPerProcess);
 	//used maxMem for now, change to processMemReq
-	auto newProcess = std::make_shared<Process>(processName, consolesPresent, maxMemPerProcess); // PID Naming Convention: Number of Consoles/Processes present + 1
+	auto newProcess = std::make_shared<Process>(processName, consolesPresent, processMemReq); // PID Naming Convention: Number of Consoles/Processes present + 1
 
 	int instructionCount = randomNumber(minInstructions, maxInstructions);
 	newProcess->populatePrintCommands(instructionCount); // Add random number of dummy Print commands
@@ -91,6 +91,10 @@ String ScreenLS(bool printToConsole)
 				runningProcessList.push_back(lsString);
 			
 				
+		}
+		if (attachedProcess->isMemoryAllocated())
+		{
+			std::cout << "Memory Allocated for " << attachedProcess->getName() << ": " << attachedProcess->getAllocatedMemory() << std::endl;
 		}
 		
 		// Access the elements of BaseScreen using the screen pointer

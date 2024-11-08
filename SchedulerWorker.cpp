@@ -93,6 +93,11 @@ void SchedulerWorker::processExecution() {
                 }
 
                 // Process is finished
+                if (assignedProcess->getAllocatedMemory()) {
+                memoryAllocator->deallocate(assignedProcess->getAllocatedMemory());
+                assignedProcess->setAllocatedMemory(nullptr);
+                assignedProcess->setMemoryAllocated(false);
+				}
                 assignedProcess->setTimeFinished();
                 assignedProcess->setState(Process::FINISHED);
                 assignedProcess = nullptr;
