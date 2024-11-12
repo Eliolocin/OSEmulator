@@ -21,11 +21,17 @@ GlobalScheduler::GlobalScheduler(int numWorkers, IMemoryAllocator* memoryAllocat
 
 // Add a process to the queue for scheduling
 void GlobalScheduler::scheduleProcess(std::shared_ptr<Process> process) {
-    {
-        std::lock_guard<std::mutex> lock(queueMutex);
-        processQueue.push(process);
-    }
+    //{
+        //std::lock_guard<std::mutex> lock(queueMutex);
+        //processQueue.push(process);
+    //}
+    //processAvailable.notify_one();  // Notify the scheduler thread a new process is available
+    //std::cout << "Process \"" << process->getName() << "\" added to scheduler queue." << std::endl;
+
+    std::lock_guard<std::mutex> lock(queueMutex);
+    readyQueue.push(process);  // Add to the readyQueue for memory allocation
     processAvailable.notify_one();  // Notify the scheduler thread a new process is available
+    
     //std::cout << "Process \"" << process->getName() << "\" added to scheduler queue." << std::endl;
 }
 
@@ -35,25 +41,28 @@ void GlobalScheduler::start() {
     for (auto& worker : workers) {
         worker->start();  // Start each worker in each thread
     }
-    
+
     stopRequested = false;
     // Start the scheduler in a separate thread to manage process dispatching
     schedulerThread = std::thread(&GlobalScheduler::dispatchProcesses, this);
 }
 
-// Scheduler logic for dispatching processes to workers
+// Scheduler logic for dispatching processes to workersint maxCores = getConfigNumCPU();
 void GlobalScheduler::dispatchProcesses() {
     int maxCores = getConfigNumCPU();
 
     while (!stopRequested) {
         std::unique_lock<std::mutex> lock(queueMutex);
-        processAvailable.wait(lock, [this] { return !processQueue.empty() || stopRequested; });
+        processAvailable.wait(lock, [this] { return !readyQueue.empty() || !memoryQueue.empty() || stopRequested; });//processQueue to readyQueue
 
         if (stopRequested) break;
 
         //std::cout << "[GlobalScheduler] Dispatching processes. Queue size: " << processQueue.size() << std::endl;
 
-        while (!processQueue.empty()) {         
+        // First, load processes from readyQueue to memoryQueue
+        loadProcessesToMemory();
+
+        while (!memoryQueue.empty()) {//process to memory     
             int activeCores = std::count_if(workers.begin(), workers.end(), [](const auto& worker) {
                 return worker->isBusy();
             });
@@ -64,9 +73,9 @@ void GlobalScheduler::dispatchProcesses() {
             }
             for (auto& worker : workers) {
                 //std::cout << "[GlobalScheduler] Checking worker " << worker->getWorkerId() << " status: " << (worker->isBusy() ? "busy" : "available") << std::endl;
-                if (!worker->isBusy() && !processQueue.empty()) {
-                    auto process = processQueue.front();
-                    processQueue.pop();
+                if (!worker->isBusy() && !memoryQueue.empty()) {//process to memory
+                    auto process = memoryQueue.front();//process to memory
+                    memoryQueue.pop();//process to memory
                     
                     //std::cout << "[GlobalScheduler] Assigning process " << process->getName() << " to worker " << worker->getWorkerId() << std::endl;
 
@@ -174,4 +183,29 @@ int GlobalScheduler::getDelayCounter()
 void GlobalScheduler::setDelayCounter(int remainingDelay)
 {
 	this->delayCounter = remainingDelay;
+}
+
+void GlobalScheduler::loadProcessesToMemory() {
+    while (!readyQueue.empty()) {
+        auto process = readyQueue.front();
+        void* memory = memoryAllocator->allocate(process->getMemoryRequired());
+        if (memory != nullptr) {
+            process->setAllocatedMemory(memory);
+            process->setMemoryAllocated(true);
+            readyQueue.pop();
+            memoryQueue.push(process);
+        }
+        else {
+            break;  // Stop if memory is insufficient
+        }
+    }
+}
+
+// Add a process to the queue for scheduling
+void GlobalScheduler::scheduleProcessRR(std::shared_ptr<Process> process) {
+    std::lock_guard<std::mutex> lock(queueMutex);
+    memoryQueue.push(process);
+    processAvailable.notify_one();
+
+    //std::cout << "Process \"" << process->getName() << "\" added to scheduler queue." << std::endl;
 }

@@ -53,21 +53,6 @@ void SchedulerWorker::processExecution() {
         if (!running) break;
 
         if (assignedProcess) {
-
-            // Only allocate memory if it hasn't been allocated yet
-            if (!assignedProcess->isMemoryAllocated()) {
-                void* memory = memoryAllocator->allocate(assignedProcess->getMemoryRequired());
-                if (memory == nullptr) {
-                    //std::cout << "Failed to allocate memory for process " << assignedProcess->getName() << "\n";
-                    assignedProcess->setState(Process::READY);
-                    ConsoleManager::getInstance()->getGlobalScheduler()->scheduleProcess(assignedProcess);
-                    assignedProcess = nullptr;
-                    busy = false;
-                    continue;  // Skip this iteration and let the process wait for memory availability
-                }
-                assignedProcess->setAllocatedMemory(memory);
-                assignedProcess->setMemoryAllocated(true);
-            }
             
             //std::cout << "[Worker " << workerId << "] Starting process " << assignedProcess->getName() << std::endl;
             assignedProcess->setCPUCoreID(workerId);
@@ -119,7 +104,10 @@ void SchedulerWorker::processExecution() {
                     if (assignedProcess&&(assignedProcess->getRemainingQuantum()-1)<= -1) {
 						//std::cout << "[Worker " << workerId << "] Quantum expired for process " << assignedProcess->getName() << ". Re-queuing." << std::endl;
                         //assignedProcess->setState(Process::READY);  // Set back to READY
-                        ConsoleManager::getInstance()->getGlobalScheduler()->scheduleProcess(assignedProcess);  // Re-queue
+                        
+                        // re-queue to memory
+                        ConsoleManager::getInstance()->getGlobalScheduler()->scheduleProcessRR(assignedProcess);  // Re-queue
+
                         assignedProcess = nullptr;
                         busy = false;
                         cv.notify_all();
