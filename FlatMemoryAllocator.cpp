@@ -6,6 +6,11 @@
 #include <unordered_map>
 #include <string>
 #include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
+#include "ConsoleManager.h"
+#include "BaseScreen.h"
 
 // Constructor to initialize the memory allocator with a specified maximum size
 FlatMemoryAllocator::FlatMemoryAllocator(size_t maximumSize)
@@ -56,9 +61,91 @@ void FlatMemoryAllocator::deallocate(void* ptr) {
     }
 }
 
-std::string FlatMemoryAllocator::visualizeMemory() {
-    return std::string(memory.begin(), memory.end());
+std::string FlatMemoryAllocator::visualizeMemory(int qq) {
+    // Get all processes through their console
+    std::vector<std::shared_ptr<BaseScreen>> processScreenList = ConsoleManager::getInstance()->getAllProcessScreens();
+
+    // Gather memory information from all processes
+    size_t totalMemory = getConfigMaxOverallMemory();
+    size_t externalFragmentation = totalMemory;
+    struct MemoryBlock {
+        size_t startOffset; // Offset representation instead of address
+        size_t size;
+        std::string processName;
+    };
+    std::vector<MemoryBlock> memoryBlocks; // Stores memory blocks and their process IDs
+
+    std::ostringstream textBuffer; // Buffer to store all output
+
+    size_t currentOffset = 0; // Track current memory offset for each process
+    for (size_t i = 0; i < processScreenList.size(); i++) {
+        std::shared_ptr<BaseScreen> screen = processScreenList[i];
+        std::shared_ptr<Process> process = screen->getProcess();
+        if (process && process->isMemoryAllocated()) {
+            size_t size = process->getMemoryRequired();
+            std::string processName = process->getName();
+            memoryBlocks.push_back({ currentOffset, size, processName });
+            externalFragmentation -= size;
+            currentOffset += size; // Increment offset by the size of the current process
+        }
+    }
+
+    // Get current time for filename and timestamp
+    std::time_t now = std::time(nullptr);
+    std::tm localTime;
+    localtime_s(&localTime, &now);
+    char timestamp[100];
+    std::strftime(timestamp, sizeof(timestamp), "%d/%m/%Y %H:%M:%S%p", &localTime);
+
+    // Write the timestamp
+    textBuffer << "Timestamp: (" << timestamp << ")\n";
+
+    // Write number of processes in memory
+    textBuffer << "Number of processes in memory: " << memoryBlocks.size() << "\n";
+
+    // Write total external fragmentation
+    textBuffer << "Total external fragmentation in KB: " << externalFragmentation << "\n\n";
+
+    // Visualize memory content from top to bottom
+    textBuffer << "----end---- = " << totalMemory << "\n";
+    size_t currentAddress = totalMemory;
+    for (const auto& block : memoryBlocks) {
+        size_t startAddress = currentAddress - block.size;
+
+        textBuffer << "\n" << startAddress + block.size << "\n"; // End address of the block
+        textBuffer << block.processName << "\n";
+        textBuffer << startAddress << "\n";
+        currentAddress = startAddress;
+    }
+
+    textBuffer << "\n----start---- = 0\n";
+
+    // Ensure the directory exists
+    std::filesystem::create_directories("./memoryCheck");
+    for (char& c : timestamp) {
+        if (c == '/' || c == ':' || c == ' ') {
+            c = '_'; // Replace invalid characters with underscores
+        }
+    }
+
+    // Write everything to the file at the end
+    std::string qqString = std::to_string(qq);
+    std::string filename = "./memoryCheck/memory_stamp_" + qqString + ".txt";
+    std::ofstream outFile(filename);
+    if (outFile.is_open()) {
+        outFile << textBuffer.str();
+        outFile.close();
+    }
+    else {
+        throw std::runtime_error("Failed to create memory visualization file");
+    }
+
+    return filename;
 }
+
+
+
+
 
 // Initialize memory contents and allocation map to represent unallocated memory
 void FlatMemoryAllocator::initializeMemory() {

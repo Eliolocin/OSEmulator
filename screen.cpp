@@ -92,10 +92,11 @@ String ScreenLS(bool printToConsole)
 			
 				
 		}
+		/*
 		if (attachedProcess->isMemoryAllocated())
 		{
 			std::cout << "Memory Allocated for " << attachedProcess->getName() << ": " << attachedProcess->getAllocatedMemory() << std::endl;
-		}
+		}*/
 		
 		// Access the elements of BaseScreen using the screen pointer
 		// Example: screen->onEnabled();

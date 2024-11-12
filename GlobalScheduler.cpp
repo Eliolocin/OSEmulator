@@ -50,6 +50,8 @@ void GlobalScheduler::start() {
 // Scheduler logic for dispatching processes to workersint maxCores = getConfigNumCPU();
 void GlobalScheduler::dispatchProcesses() {
     int maxCores = getConfigNumCPU();
+    int quantumCycles = getConfigQuantumCycles();
+    int totalCyclesPassed = 0;
 
     while (!stopRequested) {
         std::unique_lock<std::mutex> lock(queueMutex);
@@ -58,6 +60,17 @@ void GlobalScheduler::dispatchProcesses() {
         if (stopRequested) break;
 
         //std::cout << "[GlobalScheduler] Dispatching processes. Queue size: " << processQueue.size() << std::endl;
+
+		// Print contents of memory every quantum cycle
+    	if (quantumCycles-1 <= -1)
+        {
+			//std::cout << "Quantum passed" << std::endl;
+			memoryAllocator->visualizeMemory(totalCyclesPassed);
+			quantumCycles = getConfigQuantumCycles();
+            totalCyclesPassed++;
+		}
+		else quantumCycles--;
+
 
         // First, load processes from readyQueue to memoryQueue
         loadProcessesToMemory();

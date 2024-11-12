@@ -5,6 +5,7 @@
 
 # Test files
 *_output.txt
+memoryCheck/*.txt
 
 # User-specific files
 *.rsuser
