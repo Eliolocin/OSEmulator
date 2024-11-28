@@ -5,6 +5,7 @@
 #include "Utilities.h"
 #include "Config.h"
 #include "FlatMemoryAllocator.h"
+#include "PagingAllocator.h"
 
 int main() // Main entry point of OS
 {
@@ -16,10 +17,12 @@ int main() // Main entry point of OS
 
     // Initialize memory allocator with the maximum memory size from the config
     size_t maxMemorySize = getConfigMaxOverallMemory();
+    size_t frameSize = getConfigMemPerFrame();
     FlatMemoryAllocator memoryAllocator(maxMemorySize);
+    PagingAllocator memoryAllocatorPaging(maxMemorySize, frameSize);
 
     ConsoleManager::initialize(); // Initialize ConsoleManager Singleton
-    GlobalScheduler scheduler(getConfigNumCPU(), &memoryAllocator); // Create GlobalScheduler with number of CPU cores
+    GlobalScheduler scheduler(getConfigNumCPU(), &memoryAllocator, &memoryAllocatorPaging); // Create GlobalScheduler with number of CPU cores
     
     //Pass scheduler to ConsoleManager for access within commands
     ConsoleManager::getInstance()->setGlobalScheduler(&scheduler);

@@ -20,7 +20,8 @@ void generateHundredPrints(int numOfProcesses, GlobalScheduler& scheduler) {
     for (int i = 0; i < numOfProcesses; i++) {
         String processName = "process_" + std::to_string(i);
         size_t processMemReq = randomMemSize(minMemPerProcess, maxMemPerProcess);
-        auto newProcess = std::make_shared<Process>(processName, i, processMemReq);  // Create new process
+        size_t frameSize = getConfigMemPerFrame();
+        auto newProcess = std::make_shared<Process>(processName, i, processMemReq, frameSize);  // Create new process
 
     	newProcess->populatePrintCommands(100);  // Add dummy Print commands
 

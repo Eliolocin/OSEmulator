@@ -16,7 +16,8 @@
 #include "Config.h"
 
 
-SchedulerWorker::SchedulerWorker(int id, IMemoryAllocator* memoryAllocator) : workerId(id), running(false), busy(false), memoryAllocator(memoryAllocator) {}
+SchedulerWorker::SchedulerWorker(int id, IMemoryAllocator* memoryAllocator, IMemoryAllocatorPaging* memoryAllocatorPaging) 
+    : workerId(id), running(false), busy(false), memoryAllocator(memoryAllocator), memoryAllocatorPaging(memoryAllocatorPaging) {}
 
 void SchedulerWorker::assignProcess(std::shared_ptr<Process> process) {
     std::lock_guard<std::mutex> lock(mtx);
@@ -79,9 +80,17 @@ void SchedulerWorker::processExecution() {
 
                 // Process is finished
                 if (assignedProcess->getAllocatedMemory()) {
-                memoryAllocator->deallocate(assignedProcess->getAllocatedMemory());
-                assignedProcess->setAllocatedMemory(nullptr);
-                assignedProcess->setMemoryAllocated(false);
+                    if (getConfigMemPerFrame() == getConfigMaxOverallMemory()) {
+                        memoryAllocator->deallocate(assignedProcess->getAllocatedMemory());
+                    }
+                    else {
+                        //DEBUG LINES PAGING:
+                        //std::cout << "Deallocating memory for process: " << assignedProcess->getPid() << std::endl;
+                        memoryAllocatorPaging->deallocatePaging(assignedProcess.get());
+                    }
+                    //memoryAllocator->deallocate(assignedProcess->getAllocatedMemory());
+                    assignedProcess->setAllocatedMemory(nullptr);
+                    assignedProcess->setMemoryAllocated(false);
 				}
                 assignedProcess->setTimeFinished();
                 assignedProcess->setState(Process::FINISHED);
@@ -137,7 +146,15 @@ void SchedulerWorker::processExecution() {
                     assignedProcess->setState(Process::FINISHED);
                     // Deallocate memory only when process is finished
                     if (assignedProcess->getAllocatedMemory()) {
-                        memoryAllocator->deallocate(assignedProcess->getAllocatedMemory());
+                        if (getConfigMemPerFrame() == getConfigMaxOverallMemory()) {
+                            memoryAllocator->deallocate(assignedProcess->getAllocatedMemory());
+                        }
+                        else {
+                            //DEBUG LINES PAGING:
+                            //std::cout << "Deallocating memory for process: " << assignedProcess->getPid() << std::endl;
+                            memoryAllocatorPaging->deallocatePaging(assignedProcess.get());
+                        }
+                        //memoryAllocator->deallocate(assignedProcess->getAllocatedMemory());
                         assignedProcess->setAllocatedMemory(nullptr);
                         assignedProcess->setMemoryAllocated(false);
                     }
