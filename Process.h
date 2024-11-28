@@ -20,7 +20,7 @@ public:
 		FINISHED
 	};
 
-	Process(String name, int pid, size_t memoryRequired); // Constructor of Process
+	Process(String name, int pid, size_t memoryRequired, size_t frameSize); // Constructor of Process
 	void addCommand(ICommand::CommandType commandType); // Add a command to the process
 	void executeCurrentCommand(); // Execute the current command of the process
 	void moveToNextLine(); // Move to next line of command
@@ -65,6 +65,8 @@ public:
 	void* getAllocatedMemory() const { return allocatedMemory; }
 	void setAllocatedMemory(void* memory) { allocatedMemory = memory; }
 
+	size_t getNumFramesNeeded() const;  // Getter for numFramesNeeded
+
 private:
 	String name; // Name of the process
 	int pid; // Process ID
@@ -98,5 +100,6 @@ private:
 	//memory
 	bool memoryAllocated = false;  // Track if memory has already been allocated
 	void* allocatedMemory = nullptr;  // Pointer to the allocated memory
+	size_t numFramesNeeded;  // Frames needed for this process
 };
 

@@ -10,7 +10,15 @@
 #include <thread>
 
 
-Process::Process(String name, int pid, size_t memoryRequired) : name(name), pid(pid), memoryRequired(memoryRequired) {}
+Process::Process(String name, int pid, size_t memoryRequired, size_t frameSize)
+	: name(name), pid(pid), memoryRequired(memoryRequired) {
+	// Direct division since memory and frame sizes are powers of 2
+	numFramesNeeded = memoryRequired / frameSize;
+}
+
+size_t Process::getNumFramesNeeded() const {
+	return numFramesNeeded;
+}
 
 String Process::getName() const
 {

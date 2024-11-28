@@ -14,12 +14,12 @@
 #include <sstream>
 
 // Constructor initializes the number of workers (cores)
-GlobalScheduler::GlobalScheduler(int numWorkers, IMemoryAllocator* memoryAllocator)
-    : memoryAllocator(memoryAllocator), schedulerType(getConfigScheduler() == "rr" ? ROUND_ROBIN : FCFS),
+GlobalScheduler::GlobalScheduler(int numWorkers, IMemoryAllocator* memoryAllocator, IMemoryAllocatorPaging* memoryAllocatorPaging)
+    : memoryAllocator(memoryAllocator), memoryAllocatorPaging(memoryAllocatorPaging), schedulerType(getConfigScheduler() == "rr" ? ROUND_ROBIN : FCFS),
     quantumCycles(getConfigQuantumCycles()) {
     for (int i = 0; i < numWorkers; ++i) {
         //std::cout << "CPU \"" << i << "\" added!" << std::endl;
-        workers.push_back(std::make_shared<SchedulerWorker>(i, memoryAllocator));  // Create workers (CPU cores)
+        workers.push_back(std::make_shared<SchedulerWorker>(i, memoryAllocator, memoryAllocatorPaging));  // Create workers (CPU cores)
     }
 }
 
@@ -127,7 +127,7 @@ void GlobalScheduler::dispatchProcesses() {
 // Stop the scheduler and all worker threads
 void GlobalScheduler::stop() {
     stopRequested = true;  // Signal the scheduler thread to stop
-    processAvailable.notify_all();  // Wake up the scheduler thread if it’s waiting
+    processAvailable.notify_all();  // Wake up the scheduler thread if itï¿½s waiting
 
     if (schedulerThread.joinable()) {
         schedulerThread.join();  // Ensure the scheduler thread is properly joined
@@ -171,7 +171,8 @@ void GlobalScheduler::startTestMode() {
                 // Create a new batch of processes
                 std::string processName = "p" + std::to_string(processCount++);
                 size_t processMemReq = randomMemSize(minMemPerProcess, maxMemPerProcess);
-            	auto newProcess = std::make_shared<Process>(processName, processCount, processMemReq);//set to maxMem for fixed, change to processMemReq 
+                size_t frameSize = getConfigMemPerFrame();
+            	auto newProcess = std::make_shared<Process>(processName, processCount, processMemReq, frameSize);//set to maxMem for fixed, change to processMemReq 
 
                 // Generate random number of instructions between min and max
                 int instructionCount = randomNumber(minInstructions, maxInstructions);
@@ -222,10 +223,31 @@ void GlobalScheduler::setDelayCounter(int remainingDelay)
 void GlobalScheduler::loadProcessesToMemory() {
     while (!readyQueue.empty()) {
         auto process = readyQueue.front();
-        void* memory = memoryAllocator->allocate(process->getMemoryRequired());
+        void* memory = nullptr;
+        if (getConfigMemPerFrame() == getConfigMaxOverallMemory()) {
+            memory = memoryAllocator->allocate(process->getMemoryRequired());
+        }
+        else {
+
+            //DEBUG LINES PAGING:
+            //std::cout << "Attempting to allocate memory for PID=" << process->getPid() << ", FramesNeeded=" << process->getNumFramesNeeded() << std::endl;
+            //std::cout << "Shared Pointer Address: " << process.get() << std::endl;
+
+            memory = memoryAllocatorPaging->allocatePaging(process.get());
+
+            //DEBUG LINES PAGING:
+            //std::cout << "memorypaging: " << memory << std::endl;
+        }
+        //DEBUG LINES PAGING:
+        //std::cout << "memory-out: " << memory << std::endl;
+
+        //std::cout << "Process generation stopped." << std::endl;
+        //void* memory = memoryAllocator->allocate(process->getMemoryRequired());
         if (memory != nullptr) {
             process->setAllocatedMemory(memory);
             process->setMemoryAllocated(true);
+            //DEBUG LINES PAGING:
+            //std::cout << "Process PID=" << process->getPid() << " allocated successfully. FramesNeeded=" << process->getNumFramesNeeded() << std::endl;
             readyQueue.pop();
             memoryQueue.push(process);
         }
@@ -263,6 +285,7 @@ void GlobalScheduler::loadProcessesToMemory() {
         }
     }
 }
+
 
 // Add a process to the queue for scheduling
 void GlobalScheduler::scheduleProcessRR(std::shared_ptr<Process> process) {

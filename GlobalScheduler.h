@@ -11,6 +11,7 @@
 #include <map>
 #include "Config.h"
 #include "IMemoryAllocator.h"
+#include "IMemoryAllocatorPaging.h"
 
 enum SchedulerType {
     FCFS,
@@ -19,7 +20,7 @@ enum SchedulerType {
 
 class GlobalScheduler : public AbsScheduler {
 public:
-    GlobalScheduler(int numWorkers, IMemoryAllocator* memoryAllocator);  // Initialize scheduler with number of cores
+    GlobalScheduler(int numWorkers, IMemoryAllocator* memoryAllocator, IMemoryAllocatorPaging* memoryAllocatorPaging);  // Initialize scheduler with number of cores
     void scheduleProcess(std::shared_ptr<Process> process) override;  // FCFS algorithm implementation
     void scheduleProcessRR(std::shared_ptr<Process> process);
     void start() override;  // Start the scheduler
@@ -55,6 +56,7 @@ private:
 	int delayCounter = getConfigBatchProcessFreq(); // Delay counter to simulate delay between commands
 
     IMemoryAllocator* memoryAllocator;  // Memory allocator pointer
+    IMemoryAllocatorPaging* memoryAllocatorPaging;
 
     void loadProcessesToMemory();  // New function to load from readyQueue to memoryQueue
     std::queue<std::shared_ptr<Process>> readyQueue;  // Queue for processes waiting for memory

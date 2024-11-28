@@ -7,10 +7,12 @@
 #include <thread>
 #include <memory>
 #include "IMemoryAllocator.h"
+#include "IMemoryAllocatorPaging.h"
+
 
 class SchedulerWorker {
 public:
-    SchedulerWorker(int id, IMemoryAllocator* memoryAllocator);  // Constructor takes the CPU Core ID
+    SchedulerWorker(int id, IMemoryAllocator* memoryAllocator, IMemoryAllocatorPaging* memoryAllocatorPaging);  // Constructor takes the CPU Core ID
     void assignProcess(std::shared_ptr<Process> process);  // Assign a process to this worker
     void start();  // Start the worker thread
     void stop();  // Stop the worker
@@ -32,4 +34,5 @@ private:
     std::condition_variable cv;
 
     IMemoryAllocator* memoryAllocator;  // Store the memory allocator reference
+    IMemoryAllocatorPaging* memoryAllocatorPaging;  // Store the memory allocator reference
 };
