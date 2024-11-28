@@ -5,9 +5,13 @@
 #include <mutex>
 #include <condition_variable>
 #include <chrono>
+#include <filesystem>
 #include <queue>
 #include "ConsoleManager.h"
 #include "Utilities.h"
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 
 // Constructor initializes the number of workers (cores)
 GlobalScheduler::GlobalScheduler(int numWorkers, IMemoryAllocator* memoryAllocator)
@@ -45,6 +49,22 @@ void GlobalScheduler::start() {
     stopRequested = false;
     // Start the scheduler in a separate thread to manage process dispatching
     schedulerThread = std::thread(&GlobalScheduler::dispatchProcesses, this);
+
+    // Start a new thread to continuously trigger incIdleTicks(1)
+    std::thread idleTicksThread([this]() {
+        int delay = getConfigDelayPerExec();
+        while (!stopRequested) {
+			if (delay > 0) delay--;
+			else {
+                for (auto& worker : workers) {
+                    if (worker->isBusy()) incActiveTicks();
+                    else incIdleTicks(1);
+                }
+				delay = getConfigDelayPerExec();
+			}
+        }
+    });
+    idleTicksThread.detach();
 }
 
 // Scheduler logic for dispatching processes to workersint maxCores = getConfigNumCPU();
@@ -65,7 +85,7 @@ void GlobalScheduler::dispatchProcesses() {
     	if (quantumCycles-1 <= -1)
         {
 			//std::cout << "Quantum passed" << std::endl;
-			memoryAllocator->visualizeMemory(totalCyclesPassed);
+			//memoryAllocator->visualizeMemory(totalCyclesPassed);
 			quantumCycles = getConfigQuantumCycles();
             totalCyclesPassed++;
 		}
@@ -86,7 +106,7 @@ void GlobalScheduler::dispatchProcesses() {
             }
             for (auto& worker : workers) {
                 //std::cout << "[GlobalScheduler] Checking worker " << worker->getWorkerId() << " status: " << (worker->isBusy() ? "busy" : "available") << std::endl;
-                if (!worker->isBusy() && !memoryQueue.empty()) {//process to memory
+            	if (!worker->isBusy() && !memoryQueue.empty()) {//process to memory
                     auto process = memoryQueue.front();//process to memory
                     memoryQueue.pop();//process to memory
                     
@@ -198,6 +218,7 @@ void GlobalScheduler::setDelayCounter(int remainingDelay)
 	this->delayCounter = remainingDelay;
 }
 
+
 void GlobalScheduler::loadProcessesToMemory() {
     while (!readyQueue.empty()) {
         auto process = readyQueue.front();
@@ -209,6 +230,35 @@ void GlobalScheduler::loadProcessesToMemory() {
             memoryQueue.push(process);
         }
         else {
+            //////// BACKING STORE ////////
+            // Create a text file in the /HDD directory for the oldest process in the memoryQueue
+            if (!memoryQueue.empty()) {
+                auto oldestProcess = memoryQueue.front();
+                //memoryQueue.pop();
+                // Ensure the directory exists
+                std::filesystem::create_directories("./backingStore");
+
+                std::string filename = "./backingStore/" + oldestProcess->getName() + ".txt";
+                std::ofstream outFile(filename);
+
+				std::ostringstream textBuffer;
+                // Add necessary process information to textBuffer, to be saved in the .txt file
+				textBuffer << oldestProcess->getName() << "\n"; // Process name
+				textBuffer << oldestProcess->getPid() << "\n"; // Process ID
+				textBuffer << oldestProcess->getMemoryRequired() << "\n"; // Memory required
+				textBuffer << oldestProcess->getTotalCommandCounter() << "\n"; // Total instructions
+				textBuffer << oldestProcess->getCommandCounter() << "\n"; // Current instructions
+				textBuffer << oldestProcess->getTimeStarted() << "\n"; // Time process started
+
+                if (outFile.is_open()) {
+                    outFile << textBuffer.str();
+                    outFile.close();
+                }
+                else {
+                    throw std::runtime_error("Failed to create memory visualization file");
+                }
+            }
+            //////// BACKING STORE ////////
             break;  // Stop if memory is insufficient
         }
     }

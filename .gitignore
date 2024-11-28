@@ -6,6 +6,7 @@
 # Test files
 *_output.txt
 memoryCheck/*.txt
+backingStore/*.txt
 
 # User-specific files
 *.rsuser

@@ -25,9 +25,52 @@ const int CYCLE_SPEED = 5000;
 // Initialization status is False on OS launch
 static bool INIT_STATUS = false;
 
+// VMStat Variables
+static int ACTIVE_TICKS = 0;
+static int IDLE_TICKS = 0;
+static int IN_PAGES = 0;
+static int OUT_PAGES = 0;
+
 // Getter functions to access the values
+int getActiveTicks() {
+	return ACTIVE_TICKS;
+}
+
+int getIdleTicks() {
+	return IDLE_TICKS;
+}
+
+int getInPages() {
+	return IN_PAGES;
+}
+
+int getOutPages() {
+	return OUT_PAGES;
+}
+
 int getConfigNumCPU() {
     return NUM_CPU;
+}
+
+void incActiveTicks() {
+	ACTIVE_TICKS++;
+}
+
+void incIdleTicks(int increase) {
+	IDLE_TICKS = IDLE_TICKS+increase;
+}
+
+void decIdleTicks()
+{
+    IDLE_TICKS--;
+}
+
+void incInPages() {
+	IN_PAGES++;
+}
+
+void incOutPages() {
+    OUT_PAGES++;
 }
 
 std::string getConfigScheduler() {

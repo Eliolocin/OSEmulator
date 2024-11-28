@@ -91,6 +91,10 @@ void MainConsole::process()
 		{
 			ProcessSmi();
 		}
+		else if (Command == "vmstat")
+		{
+			VMStat();
+		}
 		else if (Command == "exit")
 		{
 			Exit();

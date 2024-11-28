@@ -156,6 +156,7 @@
     <ClCompile Include="cli-visuals.cpp" />
     <ClCompile Include="test-cases.cpp" />
     <ClCompile Include="time-converter.cpp" />
+    <ClCompile Include="vmstat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbsConsole.h" />

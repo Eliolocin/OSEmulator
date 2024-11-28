@@ -117,6 +117,12 @@
     <ClCompile Include="randomizer.cpp">
       <Filter>Source Files\utilities</Filter>
     </ClCompile>
+    <ClCompile Include="FlatMemoryAllocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vmstat.cpp">
+      <Filter>Source Files\commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbsConsole.h">
@@ -160,6 +166,12 @@
     </ClInclude>
     <ClInclude Include="SchedulerWorker.h">
       <Filter>Header Files\schedulers</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatMemoryAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IMemoryAllocator.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

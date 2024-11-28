@@ -14,3 +14,4 @@ void ScreenR(std::string processName);
 void ScreenS(std::string processName, GlobalScheduler* scheduler);
 std::string ScreenLS(bool printToConsole);
 void ProcessSmi();
+void VMStat();

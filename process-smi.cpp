@@ -3,8 +3,84 @@
 #include "Commands.h"	
 #include "Utilities.h"
 #include <tabulate/table.hpp>  // https://github.com/p-ranav/tabulate
+
+#include "ConsoleManager.h"
 #include "Process.h"
 
+
+
+void ProcessSmi() {
+    // Get all processes through their console
+    std::vector<std::shared_ptr<BaseScreen>> processScreenList = ConsoleManager::getInstance()->getAllProcessScreens();
+
+    // Gather memory information from all processes
+    size_t totalMemory = getConfigMaxOverallMemory();
+    size_t usedMemory = 0;
+    struct ProcessMemoryInfo {
+        std::string processName;
+        size_t memoryUsed;
+        bool isRunning;
+    };
+    std::vector<ProcessMemoryInfo> processMemoryList; // Stores memory usage for each process
+
+    size_t runningCPUs = 0;
+
+    for (size_t i = 0; i < processScreenList.size(); i++) {
+        std::shared_ptr<BaseScreen> screen = processScreenList[i];
+        std::shared_ptr<Process> process = screen->getProcess();
+        if (process && process->isMemoryAllocated()) {
+            size_t memoryUsed = process->getMemoryRequired();
+            usedMemory += memoryUsed;
+			if (process->getState() == Process::RUNNING) {
+				processMemoryList.push_back({ process->getName(), memoryUsed, true });
+			}
+			else {
+				processMemoryList.push_back({ process->getName(), memoryUsed, false });
+			}
+        }
+        if (process && process->getCPUCoreID() && process->isMemoryAllocated() && process->getState() == Process::RUNNING)
+        {
+            runningCPUs++;
+        }
+    }
+
+    // CPU Utilization percentage
+	int cpuUtil = runningCPUs * 100 / getConfigNumCPU();
+    if (cpuUtil > 100) cpuUtil = 100;
+
+    // Create the output buffer
+    std::ostringstream textBuffer;
+    textBuffer << "----------------------\n";
+    textBuffer << "| PROCESS-SMI V01.00 |\n";
+    textBuffer << "----------------------\n";
+
+    // Write memory usage summary
+	textBuffer << "CPU Util.: " << cpuUtil << "%\n";
+    textBuffer << "Memory Usage: " << usedMemory << " KB / " << totalMemory << " KB\n";
+    textBuffer << "Memory Util.: " << (usedMemory * 100) / totalMemory << "%\n\n";
+
+    int printlimit = runningCPUs;
+
+    // Write running processes and memory usage
+    textBuffer << "Running Processes and memory usage:\n";
+    textBuffer << "----------------------\n";
+    for (const auto& processInfo : processMemoryList) {
+		if (processInfo.isRunning && printlimit > 0) {
+			textBuffer << processInfo.processName << " | " << processInfo.memoryUsed << " KB\n";
+            printlimit--;
+		}
+    }
+    textBuffer << "----------------------\n";
+
+
+	std::cout << textBuffer.str() << std::endl;
+
+}
+
+
+
+
+/*
 void PrintGPULayout();
 void PrintProcessLayout();
 
@@ -18,14 +94,11 @@ public:             // Access specifier
         this->processName = processName;
     }
 };
+*/
 
-void ProcessSmi()
-{
-    PrintGPULayout();
-    PrintProcessLayout();
-}
+// Function call in between
 
-
+/*
 void PrintProcessLayout()
 {
     // Hardcoded Processes:
@@ -123,7 +196,7 @@ void PrintGPULayout()
 
     tabulate::Table gpuStats2;
     gpuStats2.add_row({ "0000000:26:00.0","On" }).format().hide_border();
-    gpuStats2.add_row({ "701MiB /", "8192MiB" });
+    gpuStats2.add_row({ "701KB /", "8192KB" });
     gpuStats2.column(1).format().font_align(tabulate::FontAlign::right);
 
     tabulate::Table gpuStats3;
@@ -142,4 +215,4 @@ void PrintGPULayout()
 
     std::cout << gpuSummary << std::endl << std::endl;
 }
-
+*/

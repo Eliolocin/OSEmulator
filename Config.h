@@ -17,6 +17,17 @@ size_t getConfigMemPerFrame();
 size_t getConfigMinMemPerProcess();
 size_t getConfigMaxMemPerProcess();
 
+int getActiveTicks();
+int getIdleTicks();
+int getInPages();
+int getOutPages();
+
+void incActiveTicks();
+void incIdleTicks(int increase);
+void decIdleTicks();
+void incInPages();
+void incOutPages();
+
 bool isInitialized();
 void setInitialized();
 

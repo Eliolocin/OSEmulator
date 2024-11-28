@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 
 #include "ConsoleManager.h"
 #include "GlobalScheduler.h"
@@ -40,6 +41,7 @@ int main() // Main entry point of OS
 
     scheduler.stop(); // Stop the scheduler using the shared pointer
     ConsoleManager::destroy(); // Clean up ConsoleManager
+
 
     return 0;
 }

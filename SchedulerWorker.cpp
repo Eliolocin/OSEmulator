@@ -53,6 +53,8 @@ void SchedulerWorker::processExecution() {
         if (!running) break;
 
         if (assignedProcess) {
+            incActiveTicks();
+            decIdleTicks();
             
             //std::cout << "[Worker " << workerId << "] Starting process " << assignedProcess->getName() << std::endl;
             assignedProcess->setCPUCoreID(workerId);
