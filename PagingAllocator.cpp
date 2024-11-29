@@ -54,6 +54,7 @@ void PagingAllocator::deallocatePaging(Process* process) {
         frameMap.erase(it); // Remove the frame allocation
 
         freeFrameList.push_back(frameIndex); // Add the frame back to the free list
+        incOutPages();
 
         // Find the next frame belonging to this process
         it = std::find_if(frameMap.begin(), frameMap.end(),
@@ -108,6 +109,7 @@ size_t PagingAllocator::allocateFrames(size_t numFrames, size_t processId) {
         size_t frameIndex = freeFrameList.back(); // Take the last free frame
         frameMap[frameIndex] = processId;        // Map frame to process
         freeFrameList.pop_back();                // Remove from free list
+        incInPages();
         //DEBUG LINES PAGING:
         //std::cout << "Allocated frame " << frameIndex << " to process " << processId << std::endl;
     }

@@ -33,14 +33,11 @@ void ProcessSmi() {
             usedMemory += memoryUsed;
 			if (process->getState() == Process::RUNNING) {
 				processMemoryList.push_back({ process->getName(), memoryUsed, true });
+				runningCPUs++;
 			}
 			else {
 				processMemoryList.push_back({ process->getName(), memoryUsed, false });
 			}
-        }
-        if (process && process->getCPUCoreID() && process->isMemoryAllocated() && process->getState() == Process::RUNNING)
-        {
-            runningCPUs++;
         }
     }
 
